@@ -48,7 +48,10 @@ Plans:
   2. The placed bracket order contains an attached stop-loss at the correct calculated percentage from fill price — never submitted as a separate order
   3. The system runs in paper mode by default; switching to live mode requires an explicit config change (`TRADING_MODE=live`)
   4. A kill-switch endpoint halts trade execution immediately when called
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 02-01-PLAN.md — pytz dependency + AlpacaExecutor service class (executor.py)
+- [ ] 02-02-PLAN.md — Trading router (/execute, /kill-switch) + __init__ export + app.py wiring
 
 ### Phase 3: Ingestion Pipeline
 **Goal**: New Trump posts from both platforms flow into a deduplicated store with alerting for scraper failures
@@ -117,7 +120,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 5/5 | Complete | 2026-04-19 |
-| 2. Alpaca Executor | 0/0 | Not started | - |
+| 2. Alpaca Executor | 0/2 | Not started | - |
 | 3. Ingestion Pipeline | 0/0 | Not started | - |
 | 4. LLM Analysis Engine | 0/0 | Not started | - |
 | 5. Risk Guard + Integration | 0/0 | Not started | - |
