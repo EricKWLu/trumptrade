@@ -67,6 +67,10 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
     )
 
+    # ── Phase 2: trading router ──────────────────────────────────────────────
+    from trumptrade.trading import trading_router          # local import avoids circular import
+    app.include_router(trading_router, prefix="/trading", tags=["trading"])
+
     @app.get("/health")
     async def health() -> dict:
         """Health check — confirms server is up and scheduler is running."""
