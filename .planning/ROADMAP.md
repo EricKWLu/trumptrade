@@ -12,7 +12,7 @@ TrumpTrade is built as a linear event-driven pipeline. The seven phases follow a
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundation** - Project scaffolding, environment config, DB schema, migrations, and watchlist settings
+- [x] **Phase 1: Foundation** - Project scaffolding, environment config, DB schema, migrations, and watchlist settings
 - [ ] **Phase 2: Alpaca Executor** - Paper trading with bracket stop-loss orders and kill-switch endpoint
 - [ ] **Phase 3: Ingestion Pipeline** - X/Twitter + Truth Social pollers, SHA-256 dedup, heartbeat alert
 - [ ] **Phase 4: LLM Analysis Engine** - Signal classification, keyword rule overlay, confidence gate, audit trail
@@ -116,7 +116,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/5 | Ready to execute | - |
+| 1. Foundation | 5/5 | Complete | 2026-04-19 |
 | 2. Alpaca Executor | 0/0 | Not started | - |
 | 3. Ingestion Pipeline | 0/0 | Not started | - |
 | 4. LLM Analysis Engine | 0/0 | Not started | - |

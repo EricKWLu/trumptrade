@@ -12,7 +12,7 @@ Automatically detect and act on Trump's social media posts faster than a human c
 
 ### Validated
 
-(None yet — ship to validate)
+- [x] User-defined stock watchlist (which tickers to trade) — **Validated in Phase 1: Foundation** (`watchlist` table with unique `symbol` column, Alembic migration verified)
 
 ### Active
 
@@ -42,12 +42,12 @@ Automatically detect and act on Trump's social media posts faster than a human c
 - Single-user personal tool, no authentication needed
 - Python backend (trading logic, scraping, LLM calls, Alpaca SDK)
 - Frontend: web dashboard (React or lightweight alternative)
-- **Truth Social**: no official API — requires scraping public profile page via polling
-- **X/Twitter**: requires paid Basic developer tier (~$100/month) for API access
+- **Truth Social**: uses Mastodon-compatible JSON API (`/api/v1/accounts/:id/statuses`) via `httpx` polling — NOT HTML scraping
+- **X/Twitter**: requires paid Basic developer tier (~$100/month) for API access; `tweepy` library
 - **Alpaca**: paper trading is free; live trading requires a funded brokerage account
 - Alpaca paper trading environment (`paper-api.alpaca.markets`) is the test mode backend
 - Historical price data for comparison mode also available via Alpaca API
-- The `alpaca-trade-api` Python library handles all brokerage interactions
+- The `alpaca-py` library handles all brokerage interactions (`from alpaca.trading.client import TradingClient`)
 
 ## Constraints
 
@@ -85,4 +85,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-19 after initialization*
+*Last updated: 2026-04-19 after Phase 1: Foundation complete*
