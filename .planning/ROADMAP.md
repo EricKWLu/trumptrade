@@ -33,11 +33,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   4. Secrets (API keys, tokens) are absent from all tracked files and the `.gitignore` protects `.env`
 **Plans**: 5 plans
 Plans:
-- [ ] 01-PLAN-01.md — Python package scaffold (pyproject.toml, core/ modules, domain stubs)
-- [ ] 01-PLAN-02.md — Frontend scaffold (Vite + React 19 + shadcn/ui + TanStack Query v5)
-- [ ] 01-PLAN-03.md — SQLAlchemy models (all 8 tables) + async DB session factory
-- [ ] 01-PLAN-04.md — Alembic async migrations + app_settings seed defaults
-- [ ] 01-PLAN-05.md — FastAPI app + APScheduler lifespan + entry point wiring
+- [x] 01-PLAN-01.md — Python package scaffold (pyproject.toml, core/ modules, domain stubs)
+- [x] 01-PLAN-02.md — Frontend scaffold (Vite + React 19 + shadcn/ui + TanStack Query v5)
+- [x] 01-PLAN-03.md — SQLAlchemy models (all 8 tables) + async DB session factory
+- [x] 01-PLAN-04.md — Alembic async migrations + app_settings seed defaults
+- [x] 01-PLAN-05.md — FastAPI app + APScheduler lifespan + entry point wiring
 
 ### Phase 2: Alpaca Executor
 **Goal**: The system can place, fill, and confirm paper trades with atomic bracket stop-loss orders using stub signals
