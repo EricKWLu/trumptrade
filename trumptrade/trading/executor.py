@@ -39,15 +39,18 @@ class AlpacaExecutor:
 
         # STEP 3: Instantiate clients per-request (NOT cached — D-06 requires mode re-read)
         settings = get_settings()
-        trading_client = TradingClient(
-            api_key=settings.alpaca_api_key,
-            secret_key=settings.alpaca_secret_key,
-            paper=is_paper,  # True → paper-api.alpaca.markets, False → api.alpaca.markets
-        )
-        data_client = StockHistoricalDataClient(
-            api_key=settings.alpaca_api_key,
-            secret_key=settings.alpaca_secret_key,
-        )
+        try:
+            trading_client = TradingClient(
+                api_key=settings.alpaca_api_key,
+                secret_key=settings.alpaca_secret_key,
+                paper=is_paper,  # True → paper-api.alpaca.markets, False → api.alpaca.markets
+            )
+            data_client = StockHistoricalDataClient(
+                api_key=settings.alpaca_api_key,
+                secret_key=settings.alpaca_secret_key,
+            )
+        except ValueError as exc:
+            raise HTTPException(status_code=502, detail=f"Alpaca credentials not configured: {exc}")
 
         # STEP 4: Fetch last trade price — sync call MUST use run_in_executor (alpaca-py has NO async methods)
         loop = asyncio.get_running_loop()
