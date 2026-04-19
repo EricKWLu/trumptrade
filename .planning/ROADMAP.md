@@ -31,7 +31,13 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. Running Alembic migrations against a fresh SQLite file creates all tables with correct schema
   3. The watchlist can be populated and queried from the database — tickers added persist across restarts
   4. Secrets (API keys, tokens) are absent from all tracked files and the `.gitignore` protects `.env`
-**Plans**: TBD
+**Plans**: 5 plans
+Plans:
+- [ ] 01-PLAN-01.md — Python package scaffold (pyproject.toml, core/ modules, domain stubs)
+- [ ] 01-PLAN-02.md — Frontend scaffold (Vite + React 19 + shadcn/ui + TanStack Query v5)
+- [ ] 01-PLAN-03.md — SQLAlchemy models (all 8 tables) + async DB session factory
+- [ ] 01-PLAN-04.md — Alembic async migrations + app_settings seed defaults
+- [ ] 01-PLAN-05.md — FastAPI app + APScheduler lifespan + entry point wiring
 
 ### Phase 2: Alpaca Executor
 **Goal**: The system can place, fill, and confirm paper trades with atomic bracket stop-loss orders using stub signals
@@ -110,7 +116,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/0 | Not started | - |
+| 1. Foundation | 0/5 | Ready to execute | - |
 | 2. Alpaca Executor | 0/0 | Not started | - |
 | 3. Ingestion Pipeline | 0/0 | Not started | - |
 | 4. LLM Analysis Engine | 0/0 | Not started | - |
