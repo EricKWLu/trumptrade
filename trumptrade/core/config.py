@@ -22,6 +22,7 @@ class Settings(BaseSettings):
     openai_api_key: str = ""
     anthropic_api_key: str = ""
     truth_social_account_id: str = "107780257626128497"
+    truth_social_token: str = ""   # Optional Bearer Token for Truth Social auth (future use)
 
     # Non-secret app config
     debug: bool = False
