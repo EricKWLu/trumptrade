@@ -62,7 +62,12 @@ Plans:
   2. New posts from Trump's Truth Social profile appear in the database within one polling interval; a heartbeat alert fires if zero posts are seen during a daytime window
   3. A post published on both platforms is stored exactly once — the second arrival is discarded via SHA-256 hash comparison
   4. Short posts, pure reposts, and posts with no financial keywords are marked as filtered and never forwarded to analysis
-**Plans**: TBD
+**Plans**: 4 plans
+Plans:
+- [ ] 03-01-PLAN.md — filters.py (pre-filter logic) + heartbeat.py (silence alert)
+- [ ] 03-02-PLAN.md — truth_social.py (httpx poller, HTML strip, cursor, SAVEPOINT dedup) + config.py patch
+- [ ] 03-03-PLAN.md — twitter.py (tweepy in executor, rate-limit budget, SAVEPOINT dedup)
+- [ ] 03-04-PLAN.md — ingestion/__init__.py (register_ingestion_jobs) + app.py wiring
 
 ### Phase 4: LLM Analysis Engine
 **Goal**: Every qualifying post produces a structured signal with sentiment, confidence, and affected tickers — all audited
@@ -121,7 +126,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 |-------|----------------|--------|-----------|
 | 1. Foundation | 5/5 | Complete | 2026-04-19 |
 | 2. Alpaca Executor | 2/2 | Complete | 2026-04-20 |
-| 3. Ingestion Pipeline | 0/0 | Not started | - |
+| 3. Ingestion Pipeline | 0/4 | Not started | - |
 | 4. LLM Analysis Engine | 0/0 | Not started | - |
 | 5. Risk Guard + Integration | 0/0 | Not started | - |
 | 6. Web Dashboard | 0/0 | Not started | - |
