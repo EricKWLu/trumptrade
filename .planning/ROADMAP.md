@@ -14,7 +14,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Project scaffolding, environment config, DB schema, migrations, and watchlist settings
 - [x] **Phase 2: Alpaca Executor** - Paper trading with bracket stop-loss orders and kill-switch endpoint
-- [ ] **Phase 3: Ingestion Pipeline** - X/Twitter + Truth Social pollers, SHA-256 dedup, heartbeat alert
+- [x] **Phase 3: Ingestion Pipeline** - X/Twitter + Truth Social pollers, SHA-256 dedup, heartbeat alert
 - [ ] **Phase 4: LLM Analysis Engine** - Signal classification, keyword rule overlay, confidence gate, audit trail
 - [ ] **Phase 5: Risk Guard + Integration** - asyncio.Queue chokepoint, position sizing, daily loss cap, market hours, full pipeline wired end-to-end
 - [ ] **Phase 6: Web Dashboard** - Live post feed, trade log, portfolio view, bot kill switch, settings UI
@@ -64,10 +64,10 @@ Plans:
   4. Short posts, pure reposts, and posts with no financial keywords are marked as filtered and never forwarded to analysis
 **Plans**: 4 plans
 Plans:
-- [ ] 03-01-PLAN.md — filters.py (pre-filter logic) + heartbeat.py (silence alert)
-- [ ] 03-02-PLAN.md — truth_social.py (httpx poller, HTML strip, cursor, SAVEPOINT dedup) + config.py patch
-- [ ] 03-03-PLAN.md — twitter.py (tweepy in executor, rate-limit budget, SAVEPOINT dedup)
-- [ ] 03-04-PLAN.md — ingestion/__init__.py (register_ingestion_jobs) + app.py wiring
+- [x] 03-01-PLAN.md — filters.py (pre-filter logic) + heartbeat.py (silence alert)
+- [x] 03-02-PLAN.md — truth_social.py (httpx poller, HTML strip, cursor, SAVEPOINT dedup) + config.py patch
+- [x] 03-03-PLAN.md — twitter.py (tweepy in executor, rate-limit budget, SAVEPOINT dedup)
+- [x] 03-04-PLAN.md — ingestion/__init__.py (register_ingestion_jobs) + app.py wiring
 
 ### Phase 4: LLM Analysis Engine
 **Goal**: Every qualifying post produces a structured signal with sentiment, confidence, and affected tickers — all audited
@@ -126,7 +126,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 |-------|----------------|--------|-----------|
 | 1. Foundation | 5/5 | Complete | 2026-04-19 |
 | 2. Alpaca Executor | 2/2 | Complete | 2026-04-20 |
-| 3. Ingestion Pipeline | 0/4 | Not started | - |
+| 3. Ingestion Pipeline | 4/4 | Complete | 2026-04-21 |
 | 4. LLM Analysis Engine | 0/0 | Not started | - |
 | 5. Risk Guard + Integration | 0/0 | Not started | - |
 | 6. Web Dashboard | 0/0 | Not started | - |
