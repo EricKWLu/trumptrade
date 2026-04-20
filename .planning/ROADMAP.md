@@ -13,7 +13,7 @@ TrumpTrade is built as a linear event-driven pipeline. The seven phases follow a
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation** - Project scaffolding, environment config, DB schema, migrations, and watchlist settings
-- [ ] **Phase 2: Alpaca Executor** - Paper trading with bracket stop-loss orders and kill-switch endpoint
+- [x] **Phase 2: Alpaca Executor** - Paper trading with bracket stop-loss orders and kill-switch endpoint
 - [ ] **Phase 3: Ingestion Pipeline** - X/Twitter + Truth Social pollers, SHA-256 dedup, heartbeat alert
 - [ ] **Phase 4: LLM Analysis Engine** - Signal classification, keyword rule overlay, confidence gate, audit trail
 - [ ] **Phase 5: Risk Guard + Integration** - asyncio.Queue chokepoint, position sizing, daily loss cap, market hours, full pipeline wired end-to-end
@@ -50,8 +50,8 @@ Plans:
   4. A kill-switch endpoint halts trade execution immediately when called
 **Plans**: 2 plans
 Plans:
-- [ ] 02-01-PLAN.md — pytz dependency + AlpacaExecutor service class (executor.py)
-- [ ] 02-02-PLAN.md — Trading router (/execute, /kill-switch) + __init__ export + app.py wiring
+- [x] 02-01-PLAN.md — pytz dependency + AlpacaExecutor service class (executor.py)
+- [x] 02-02-PLAN.md — Trading router (/execute, /kill-switch) + __init__ export + app.py wiring
 
 ### Phase 3: Ingestion Pipeline
 **Goal**: New Trump posts from both platforms flow into a deduplicated store with alerting for scraper failures
@@ -120,7 +120,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 5/5 | Complete | 2026-04-19 |
-| 2. Alpaca Executor | 0/2 | Not started | - |
+| 2. Alpaca Executor | 2/2 | Complete | 2026-04-20 |
 | 3. Ingestion Pipeline | 0/0 | Not started | - |
 | 4. LLM Analysis Engine | 0/0 | Not started | - |
 | 5. Risk Guard + Integration | 0/0 | Not started | - |
