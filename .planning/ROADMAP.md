@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Alpaca Executor** - Paper trading with bracket stop-loss orders and kill-switch endpoint
 - [x] **Phase 3: Ingestion Pipeline** - X/Twitter + Truth Social pollers, SHA-256 dedup, heartbeat alert
 - [x] **Phase 4: LLM Analysis Engine** - Signal classification, keyword rule overlay, confidence gate, audit trail
-- [ ] **Phase 5: Risk Guard + Integration** - asyncio.Queue chokepoint, position sizing, daily loss cap, market hours, full pipeline wired end-to-end
+- [x] **Phase 5: Risk Guard + Integration** - asyncio.Queue chokepoint, position sizing, daily loss cap, market hours, full pipeline wired end-to-end
 - [ ] **Phase 6: Web Dashboard** - Live post feed, trade log, portfolio view, bot kill switch, settings UI
 - [ ] **Phase 7: Benchmarks + Live Trading** - SPY/QQQ/random shadow portfolios, comparison chart, two-step live trading unlock
 
@@ -97,8 +97,8 @@ Plans:
 **Plans**: 3 plans
 Plans:
 - [x] 05-01-PLAN.md — risk_guard package scaffold (guard.py, __init__.py) + Alembic migration 005
-- [ ] 05-02-PLAN.md — Patch analysis_worker.py (enqueue) + executor.py (signal_id) + app.py (lifespan wiring)
-- [ ] 05-03-PLAN.md — risk_guard/router.py (GET/PATCH /settings/risk) + end-to-end human verify
+- [x] 05-02-PLAN.md — Patch analysis_worker.py (enqueue) + executor.py (signal_id) + app.py (lifespan wiring)
+- [x] 05-03-PLAN.md — risk_guard/router.py (GET/PATCH /settings/risk) + end-to-end human verify
 
 ### Phase 6: Web Dashboard
 **Goal**: Users can monitor the full pipeline, review all trades, see live portfolio state, and control the bot from a browser
@@ -136,6 +136,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | 2. Alpaca Executor | 2/2 | Complete | 2026-04-20 |
 | 3. Ingestion Pipeline | 4/4 | Complete | 2026-04-21 |
 | 4. LLM Analysis Engine | 3/3 | Complete | 2026-04-21 |
-| 5. Risk Guard + Integration | 1/3 | In progress | - |
+| 5. Risk Guard + Integration | 3/3 | Complete | 2026-04-21 |
 | 6. Web Dashboard | 0/0 | Not started | - |
 | 7. Benchmarks + Live Trading | 0/0 | Not started | - |

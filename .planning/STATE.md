@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-04-19)
 
 ## Current Position
 
-Phase: 5 of 7 (Risk Guard + Integration) — Phase 4 complete
-Plan: 1 of 3 in current phase
-Status: In progress
-Last activity: 2026-04-21 — Phase 5 plan 01 complete (risk_guard package + migration 005)
+Phase: 5 of 7 (Risk Guard + Integration) — Phase 5 complete
+Plan: 3 of 3 in current phase
+Status: Phase complete — ready for Phase 6
+Last activity: 2026-04-21 — Phase 5 plan 03 complete (settings router + end-to-end human verify)
 
-Progress: [█████░░░░░] 62%
+Progress: [███████░░░] 71%
 
 ## Performance Metrics
 
@@ -31,7 +31,7 @@ Progress: [█████░░░░░] 62%
 | 2. Alpaca Executor | 2/2 | ~16 min | ~8 min |
 | 3. Ingestion Pipeline | 4/4 | ~25 min | ~6 min |
 | 4. LLM Analysis Engine | 3/3 | ~25 min | ~8 min |
-| 5. Risk Guard + Integration | 1/3 | ~4 min | — |
+| 5. Risk Guard + Integration | 3/3 | ~19 min | ~6 min |
 
 **Recent Trend:**
 - Last 3 plans: 04-03, 05-01
@@ -54,6 +54,9 @@ Recent decisions affecting current work:
 - QueueItem in guard.py (not models.py) — re-exported from __init__.py; keeps risk logic self-contained
 - executor.execute() accepts optional signal_id — enables full audit chain Signal → Order (SC-4)
 - settings_router=None placeholder in __init__.py — try/except ImportError guard until router.py created in plan 03
+- router.py uses _read_setting() helper per key (4 separate selects) — avoids complex multi-key query; DB is SQLite local, overhead negligible
+- PATCH with empty body returns 200 with current values unchanged — correct PATCH semantics (T-05-12: not a vulnerability)
+- None guard removed from app.py — router.py now exists; unconditional include_router() is cleaner
 
 ### Pending Todos
 
@@ -72,5 +75,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-04-21
-Stopped at: Phase 5 plan 01 complete — risk_guard package and migration 005 delivered
-Resume file: .planning/phases/05-risk-guard-integration/05-02-PLAN.md
+Stopped at: Phase 5 complete — all 3 plans done, end-to-end pipeline verified by human
+Resume file: .planning/phases/06-web-dashboard/06-PLAN.md (Phase 6 not yet planned)

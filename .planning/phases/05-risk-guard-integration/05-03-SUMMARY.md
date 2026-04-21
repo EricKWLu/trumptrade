@@ -34,9 +34,9 @@ decisions:
   - "None guard removed from app.py — router.py now exists; unconditional include_router() is cleaner"
   - "RiskSettingsPatch uses Optional fields with Field(gt=0) validators — T-05-10 Pydantic validation at schema layer"
 metrics:
-  duration_seconds: 90
+  duration_seconds: 900
   completed_date: "2026-04-21"
-  tasks_completed: 1
+  tasks_completed: 2
   tasks_total: 2
   files_created: 1
   files_modified: 2
@@ -112,6 +112,28 @@ Both endpoints already covered in the plan's threat model:
 | settings_router is non-None | PASSED |
 | No try/except ImportError in __init__.py | CONFIRMED (grep exit 1) |
 
-## Checkpoint Status
+## Human Verification Results
 
-Task 2 (`checkpoint:human-verify`) reached. Awaiting human verification of the complete Phase 5 end-to-end pipeline.
+Task 2 (`checkpoint:human-verify`) APPROVED by user on 2026-04-21.
+
+| Step | Check | Result |
+|------|-------|--------|
+| 1 | Server started with "APScheduler started" + "Risk consumer task started" | PASSED |
+| 2 | GET /health returned `{"status":"ok","scheduler_running":true}` | PASSED |
+| 3 | GET /settings/risk returned all 4 risk settings as JSON | PASSED |
+| 4 | PATCH /settings/risk updated signal_staleness_minutes, change persisted on re-read | PASSED |
+| 5 | Clean shutdown, no "Task was destroyed but it is pending!" warnings | PASSED |
+
+## Next Phase Readiness
+
+Phase 5 (Risk Guard + Integration) is complete. All 5 requirements satisfied:
+
+| Requirement | Status |
+|-------------|--------|
+| RISK-01 | Complete — staleness gate in risk_consumer |
+| RISK-02 | Complete — market-hours hold list in risk_consumer |
+| RISK-03 | Complete — daily cap + position sizing in risk_consumer |
+| TRADE-04 | Complete — signal_id threaded from Signal → Order |
+| SETT-02 | Complete — GET/PATCH /settings/risk endpoints |
+
+Phase 6 (Dashboard) can now read and update all risk controls via the REST API. The full pipeline — Truth Social/X polling → analysis_worker → signal_queue → risk_consumer → AlpacaExecutor — is end-to-end verified.
