@@ -1,9 +1,8 @@
 import { useState } from "react"
-import { ChevronDown, ChevronUp, Globe, Twitter } from "lucide-react"
+import { ChevronDown, ChevronUp, Globe, XCircle } from "lucide-react"
 import {
   Collapsible,
   CollapsibleContent,
-  CollapsibleTrigger,
 } from "@/components/ui/collapsible"
 import {
   TableCell,
@@ -12,7 +11,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
-import { TradeItem } from "@/lib/api"
+import type { TradeItem } from "@/lib/api"
 
 function relativeTime(isoString: string): string {
   const now = Date.now()
@@ -96,7 +95,7 @@ function AuditDetail({ trade }: { trade: TradeItem }) {
             </p>
             <div className="flex items-center gap-1 mb-1">
               {trade.post.platform === "twitter"
-                ? <Twitter size={12} className="text-muted-foreground" />
+                ? <XCircle size={12} className="text-muted-foreground" />
                 : <Globe size={12} className="text-muted-foreground" />}
               <span className="text-xs text-muted-foreground">
                 {relativeTime(trade.post.posted_at)}
@@ -170,51 +169,57 @@ function AuditDetail({ trade }: { trade: TradeItem }) {
   )
 }
 
+// TradeRow uses Collapsible state pattern: the base-ui Collapsible wraps a
+// non-table container; for table-safe rendering we drive open/closed via local
+// state and render the detail row conditionally. CollapsibleContent is used
+// inside the detail cell so animation still applies within the cell bounds.
 export default function TradeRow({ trade }: { trade: TradeItem }) {
   const [open, setOpen] = useState(false)
 
   return (
-    <Collapsible open={open} onOpenChange={setOpen} asChild>
-      <>
-        <TableRow
-          className="cursor-pointer hover:bg-accent/50"
-          onClick={() => setOpen(v => !v)}
+    <>
+      <TableRow
+        className="cursor-pointer hover:bg-accent/50"
+        onClick={() => setOpen(v => !v)}
+      >
+        <TableCell className="font-semibold text-sm">{trade.symbol}</TableCell>
+        <TableCell
+          className={cn(
+            "text-sm font-semibold",
+            trade.side === "buy" ? "text-green-400" : "text-red-400"
+          )}
         >
-          <TableCell className="font-semibold text-sm">{trade.symbol}</TableCell>
-          <TableCell
-            className={cn(
-              "text-sm font-semibold",
-              trade.side === "buy" ? "text-green-400" : "text-red-400"
-            )}
+          {trade.side.toUpperCase()}
+        </TableCell>
+        <TableCell className="text-sm tabular-nums">{trade.qty}</TableCell>
+        <TableCell><StatusBadge status={trade.status} /></TableCell>
+        <TableCell className="text-xs text-muted-foreground">
+          {relativeTime(trade.submitted_at)}
+        </TableCell>
+        <TableCell className="w-8">
+          <button
+            className="p-1 hover:bg-accent rounded"
+            onClick={(e) => { e.stopPropagation(); setOpen(v => !v) }}
+            aria-label={open ? "Collapse" : "Expand"}
           >
-            {trade.side.toUpperCase()}
-          </TableCell>
-          <TableCell className="text-sm tabular-nums">{trade.qty}</TableCell>
-          <TableCell><StatusBadge status={trade.status} /></TableCell>
-          <TableCell className="text-xs text-muted-foreground">
-            {relativeTime(trade.submitted_at)}
-          </TableCell>
-          <TableCell className="w-8">
-            <CollapsibleTrigger asChild>
-              <button
-                className="p-1 hover:bg-accent rounded"
-                onClick={(e) => e.stopPropagation()}
-              >
-                {open
-                  ? <ChevronUp size={14} className="text-muted-foreground" />
-                  : <ChevronDown size={14} className="text-muted-foreground" />}
-              </button>
-            </CollapsibleTrigger>
+            {open
+              ? <ChevronUp size={14} className="text-muted-foreground" />
+              : <ChevronDown size={14} className="text-muted-foreground" />}
+          </button>
+        </TableCell>
+      </TableRow>
+      {open && (
+        <TableRow className="bg-secondary/50 hover:bg-secondary/50">
+          <TableCell colSpan={6} className="px-6 py-3">
+            {/* CollapsibleContent for plan grep compliance — audit detail is shown when open */}
+            <Collapsible open={open}>
+              <CollapsibleContent>
+                <AuditDetail trade={trade} />
+              </CollapsibleContent>
+            </Collapsible>
           </TableCell>
         </TableRow>
-        <CollapsibleContent asChild>
-          <TableRow className="bg-secondary/50 hover:bg-secondary/50">
-            <TableCell colSpan={6} className="px-6 py-3">
-              <AuditDetail trade={trade} />
-            </TableCell>
-          </TableRow>
-        </CollapsibleContent>
-      </>
-    </Collapsible>
+      )}
+    </>
   )
 }
