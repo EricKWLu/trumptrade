@@ -7,6 +7,7 @@ and register jobs via:
 """
 from __future__ import annotations
 
+import asyncio
 import logging
 from contextlib import asynccontextmanager
 from typing import AsyncGenerator
@@ -44,9 +45,25 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     scheduler.start()
     logger.info("APScheduler started — ready to receive jobs")
 
+    # Phase 5: start risk consumer (D-03 — asyncio.create_task, not APScheduler job)
+    # Local import avoids circular import (established codebase pattern from Phase 3/4).
+    # Task MUST be created AFTER scheduler.start() to maintain startup order.
+    from trumptrade.risk_guard.guard import risk_consumer  # local import
+    _consumer_task = asyncio.create_task(risk_consumer(), name="risk_consumer")
+    logger.info("Risk consumer task started")
+
     yield  # Application runs here
 
     # SHUTDOWN
+    # Cancel consumer task and await it — prevents "Task destroyed but pending!" warning.
+    # CancelledError is swallowed here (in the lifespan context) — NOT in the consumer itself.
+    _consumer_task.cancel()
+    try:
+        await _consumer_task
+    except asyncio.CancelledError:
+        pass
+    logger.info("Risk consumer task stopped")
+
     # wait=False: do not block waiting for running jobs; abandon them cleanly.
     # Prevents hang in async context when jobs are mid-execution.
     scheduler.shutdown(wait=False)
@@ -70,6 +87,11 @@ def create_app() -> FastAPI:
     # ── Phase 2: trading router ──────────────────────────────────────────────
     from trumptrade.trading import trading_router          # local import avoids circular import
     app.include_router(trading_router, prefix="/trading", tags=["trading"])
+
+    # ── Phase 5: risk settings router ───────────────────────────────────────
+    from trumptrade.risk_guard import settings_router      # local import avoids circular import
+    if settings_router is not None:  # guard for plan execution order (router.py created in plan 03)
+        app.include_router(settings_router, prefix="/settings", tags=["settings"])
 
     # ── Phase 3: ingestion jobs ──────────────────────────────────────────────
     from trumptrade.ingestion import register_ingestion_jobs  # local import avoids circular import
