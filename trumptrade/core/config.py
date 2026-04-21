@@ -21,6 +21,7 @@ class Settings(BaseSettings):
     x_bearer_token: str = ""
     openai_api_key: str = ""
     anthropic_api_key: str = ""
+    groq_api_key: str = ""  # Optional — required only when llm_provider = "groq" (D-03)
     truth_social_account_id: str = "107780257626128497"
     truth_social_token: str = ""   # Optional Bearer Token for Truth Social auth (future use)
 
