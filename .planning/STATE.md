@@ -10,16 +10,16 @@ See: .planning/PROJECT.md (updated 2026-04-19)
 ## Current Position
 
 Phase: 5 of 7 (Risk Guard + Integration) — Phase 4 complete
-Plan: 0 of 3 in current phase
-Status: Ready to execute
-Last activity: 2026-04-21 — Phase 5 planned (3 plans, 3 waves)
+Plan: 1 of 3 in current phase
+Status: In progress
+Last activity: 2026-04-21 — Phase 5 plan 01 complete (risk_guard package + migration 005)
 
-Progress: [████░░░░░░] 57%
+Progress: [█████░░░░░] 62%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 9
+- Total plans completed: 10
 - Average duration: ~8 min/plan
 - Total execution time: ~1.2 hours
 
@@ -31,9 +31,10 @@ Progress: [████░░░░░░] 57%
 | 2. Alpaca Executor | 2/2 | ~16 min | ~8 min |
 | 3. Ingestion Pipeline | 4/4 | ~25 min | ~6 min |
 | 4. LLM Analysis Engine | 3/3 | ~25 min | ~8 min |
+| 5. Risk Guard + Integration | 1/3 | ~4 min | — |
 
 **Recent Trend:**
-- Last 3 plans: 04-01, 04-02, 04-03
+- Last 3 plans: 04-03, 05-01
 - Trend: On track
 
 *Updated after each plan completion*
@@ -50,6 +51,9 @@ Recent decisions affecting current work:
 - APScheduler in-process — no Celery/Redis needed
 - Bracket orders only — stop-loss always atomic with entry
 - `TRADING_MODE` enum: single config flag, not two code branches
+- QueueItem in guard.py (not models.py) — re-exported from __init__.py; keeps risk logic self-contained
+- executor.execute() accepts optional signal_id — enables full audit chain Signal → Order (SC-4)
+- settings_router=None placeholder in __init__.py — try/except ImportError guard until router.py created in plan 03
 
 ### Pending Todos
 
@@ -68,5 +72,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-04-21
-Stopped at: Phase 5 planned — 3 plans ready to execute (Wave 1 → 2 → 3)
-Resume file: .planning/phases/05-risk-guard-integration/05-01-PLAN.md
+Stopped at: Phase 5 plan 01 complete — risk_guard package and migration 005 delivered
+Resume file: .planning/phases/05-risk-guard-integration/05-02-PLAN.md
