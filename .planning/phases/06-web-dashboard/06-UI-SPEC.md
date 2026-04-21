@@ -77,7 +77,7 @@ Declared values (all multiples of 4):
 | 3xl | 64px | `p-16` | Page-level outer padding (not used in dense views) |
 
 Exceptions:
-- Sidebar nav items: `py-2 px-3` (10px/12px — intentional dense sidebar fit)
+- Sidebar nav items: `py-2 px-3` (8px/12px — intentional dense sidebar fit)
 - Kill switch button: full sidebar width minus `mx-3`, height `h-9` (36px)
 - Table rows: `py-3` (12px) vertical — dense data table standard
 - Watchlist ticker chips: `px-2 py-1` (8px/4px) — compact chip convention
@@ -88,14 +88,14 @@ Exceptions:
 
 | Role | Size | Weight | Line Height | Tailwind | Usage |
 |------|------|--------|-------------|----------|-------|
-| Body | 14px | 400 (regular) | 1.5 | `text-sm` | Post text, table cells, form labels, alert copy |
-| Label | 12px | 500 (medium) | 1.4 | `text-xs font-medium` | Badge text, chip labels, table headers, timestamps |
+| Body | 14px | 400 (regular) | 1.5 | `text-sm` | Post text, table cells, form labels, alert copy, timestamps, muted elements |
 | Heading | 20px | 600 (semibold) | 1.2 | `text-xl font-semibold` | Page titles (Feed, Trades, Portfolio, Settings) |
-| Display | 28px | 700 (bold) | 1.1 | `text-3xl font-bold` | Portfolio summary card numbers (equity, P&L) |
+| Label | 12px | 600 (semibold) | 1.4 | `text-xs font-semibold` | Badge text, chip labels, table headers |
+| Display | 28px | 600 (semibold) | 1.1 | `text-3xl font-semibold` | Portfolio summary card numbers (equity, P&L) |
 
 Font family: `Geist Variable, sans-serif` — set globally via `html { @apply font-sans; }` in index.css.
 
-Declared weights: regular (400) and semibold (600). Medium (500) used only for label badges; bold (700) used only for portfolio card numbers. No other weights.
+Declared weights: regular (400) and semibold (600). No other weights.
 
 ---
 
@@ -223,7 +223,7 @@ Source: CONTEXT.md D-02, D-09, D-10
 - Platform icon: Truth Social → `Globe` (16px), X/Twitter → `Twitter` (16px), both in `text-muted-foreground`
 - Timestamp: relative (e.g., "3 min ago") using `date-fns` or browser `Intl.RelativeTimeFormat`, `text-xs text-muted-foreground`
 - Post text: `text-sm leading-relaxed text-foreground`
-- Sentiment badge: `text-xs font-medium px-2 py-0.5 rounded-full`
+- Sentiment badge: `text-xs font-semibold px-2 py-0.5 rounded-full`
   - BULLISH: `bg-green-500/10 text-green-400`
   - BEARISH: `bg-red-500/10 text-red-400`
   - NEUTRAL: `bg-muted text-muted-foreground`
@@ -257,7 +257,7 @@ Source: CONTEXT.md D-02, D-09, D-10
 **Table columns**: Symbol | Side | Qty | Status | Submitted
 
 **Row**:
-- Symbol: `text-sm font-medium text-foreground`
+- Symbol: `text-sm font-semibold text-foreground`
 - Side: BUY → `text-green-400`, SELL → `text-red-400`, `text-sm`
 - Qty: `text-sm tabular-nums text-foreground`
 - Status: badge — `submitted` (muted), `filled` (green/10%), `cancelled` (muted), `error` (red/10%)
@@ -288,13 +288,13 @@ Source: CONTEXT.md D-02, D-09, D-10
 
 | Card | Label | Value format |
 |------|-------|-------------|
-| Total Equity | "Total Equity" | `$123,456.78` (display size 28px bold) |
-| P&L Today | "P&L Today" | `+$234.56` green / `-$234.56` red (display size 28px bold) |
-| Buying Power | "Buying Power" | `$12,345.00` (display size 28px bold) |
+| Total Equity | "Total Equity" | `$123,456.78` (display size 28px semibold) |
+| P&L Today | "P&L Today" | `+$234.56` green / `-$234.56` red (display size 28px semibold) |
+| Buying Power | "Buying Power" | `$12,345.00` (display size 28px semibold) |
 
 - Card: `bg-card border border-border rounded-lg p-6`
-- Label: `text-xs font-medium text-muted-foreground uppercase tracking-wide`
-- Value: `text-3xl font-bold text-foreground mt-2`
+- Label: `text-xs font-semibold text-muted-foreground uppercase tracking-wide`
+- Value: `text-3xl font-semibold text-foreground mt-2`
 - P&L color: positive → `text-green-400`, negative → `text-red-400`, zero → `text-foreground`
 - Source: CONTEXT.md D-03
 
@@ -328,7 +328,7 @@ Columns: Symbol | Qty | Market Value | Avg Entry | Unrealized P&L | % Change
 - Chips: `flex flex-wrap gap-2` row of `Badge variant="outline"` components
   - Each chip: ticker symbol + `X` icon (`lucide-react` `X`, size 12px) — clicking X calls `DELETE /watchlist/{symbol}`
   - X button: `text-muted-foreground hover:text-destructive` transition
-- Add input row: `Input` (placeholder "Add ticker, e.g. AAPL") + `Button` labeled "Add" with `Plus` icon
+- Add input row: `Input` (placeholder "Add ticker, e.g. AAPL") + `Button` labeled "Add Ticker" with `Plus` icon
   - On submit (Enter key or button click): `POST /watchlist` with `{ "symbol": "AAPL" }`, uppercase the value before send
   - Validation: reject empty input, reject non-alphabetic characters, max 5 chars
   - On error (duplicate, invalid): show `text-destructive text-xs` message below input
@@ -389,6 +389,7 @@ Columns: Symbol | Qty | Market Value | Avg Entry | Unrealized P&L | % Change
 | Settings risk description | "Changes take effect on the next signal." |
 | Settings save success | "Settings saved." |
 | Settings save error | "Failed to save. Try again." |
+| Add ticker button label | "Add Ticker" |
 | Add ticker validation error — empty | "Enter a ticker symbol." |
 | Add ticker validation error — invalid | "Ticker must be 1–5 letters only." |
 | Add ticker validation error — duplicate | "This ticker is already on your watchlist." |
