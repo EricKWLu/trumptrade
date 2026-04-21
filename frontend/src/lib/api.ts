@@ -19,6 +19,13 @@ export interface PostItem {
   created_at: string
   is_filtered: boolean
   filter_reason: string | null
+  signal: {
+    sentiment: string
+    confidence: number
+    affected_tickers: string[]
+    final_action: string | null
+    reason_code: string | null
+  } | null
 }
 
 export interface SignalDetail {

@@ -30,7 +30,6 @@ function EmptyState() {
   )
 }
 
-// Convert REST PostItem to PostCardData (no signal field available from REST)
 function restToCard(p: PostItem): PostCardData {
   return {
     id: p.id,
@@ -39,7 +38,7 @@ function restToCard(p: PostItem): PostCardData {
     posted_at: p.posted_at,
     is_filtered: p.is_filtered,
     filter_reason: p.filter_reason,
-    signal: null,
+    signal: p.signal,
     isNew: false,
   }
 }
