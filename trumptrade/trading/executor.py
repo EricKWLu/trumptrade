@@ -26,7 +26,7 @@ class BotDisabledError(Exception):
 
 class AlpacaExecutor:
 
-    async def execute(self, symbol: str, side: str, qty: float) -> dict:
+    async def execute(self, symbol: str, side: str, qty: float, signal_id: int | None = None) -> dict:
         # STEP 1: Kill-switch check FIRST — before any network call (per D-05 + CONTEXT.md specifics)
         bot_enabled_raw = await self._get_setting("bot_enabled")
         if bot_enabled_raw != "true":           # CRITICAL: compare to string "true", NOT bool()
@@ -100,7 +100,7 @@ class AlpacaExecutor:
         alpaca_order_id = str(alpaca_order.id)   # CRITICAL: UUID → str before DB write
 
         # STEP 8: Log confirmed order to DB (D-04 — "confirmed" = order ID assigned, status=submitted)
-        await self._log_order(alpaca_order_id, symbol, side, qty, trading_mode)
+        await self._log_order(alpaca_order_id, symbol, side, qty, trading_mode, signal_id=signal_id)
 
         logger.info("Order submitted: %s %s %s qty=%s mode=%s", alpaca_order_id, side, symbol, qty, trading_mode)
         return {"order_id": alpaca_order_id, "status": "submitted"}
@@ -125,7 +125,8 @@ class AlpacaExecutor:
             return result.scalar_one()  # raises NoResultFound if key missing — acceptable
 
     async def _log_order(
-        self, alpaca_order_id: str, symbol: str, side: str, qty: float, trading_mode: str
+        self, alpaca_order_id: str, symbol: str, side: str, qty: float, trading_mode: str,
+        signal_id: int | None = None,
     ) -> None:
         """Write submitted order to the orders table."""
         async with AsyncSessionLocal() as session:
@@ -137,6 +138,6 @@ class AlpacaExecutor:
                 order_type="bracket",
                 status="submitted",
                 trading_mode=trading_mode,
-                # signal_id omitted — nullable=True; stub/test orders have no signal
+                signal_id=signal_id,  # Phase 5: links order to signal for full audit chain (SC-4)
             ))
             await session.commit()
