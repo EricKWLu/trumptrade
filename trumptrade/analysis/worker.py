@@ -12,6 +12,7 @@ row exists (LEFT JOIN anti-join, D-06). For each post:
   6. Insert Signal row with full audit fields (D-15, ANLYS-04)
 """
 
+import asyncio
 import json
 import logging
 from typing import Optional
@@ -275,6 +276,30 @@ async def analysis_worker() -> None:
         async with AsyncSessionLocal() as session:
             session.add(signal)
             await session.commit()
+
+        # Phase 5: enqueue BUY/SELL signals onto risk_guard queue (D-01)
+        # SKIP signals are never enqueued — they are already in DB for audit.
+        # Local import inside loop body avoids circular import (established codebase pattern).
+        if final_action in ("BUY", "SELL") and final_tickers:
+            from trumptrade.risk_guard import signal_queue, QueueItem  # local import
+            item = QueueItem(
+                signal_id=signal.id,        # populated after commit() — SQLAlchemy 2.x async
+                post_id=post.id,
+                tickers=final_tickers,      # already list[str]; no json.loads() needed
+                side=final_action,
+                confidence=signal_result.confidence,
+                posted_at=post.posted_at,   # naive UTC datetime from SQLite
+            )
+            try:
+                signal_queue.put_nowait(item)
+                logger.info(
+                    "analysis_worker: enqueued %s signal_id=%d tickers=%s",
+                    final_action, signal.id, final_tickers,
+                )
+            except asyncio.QueueFull:
+                logger.warning(
+                    "analysis_worker: signal_queue full — discarding signal_id=%d", signal.id
+                )
 
         inserted += 1
         logger.info(
