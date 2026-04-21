@@ -62,28 +62,36 @@ async def get_posts(
     limit: int = Query(default=50, le=200),
     offset: int = Query(default=0, ge=0),
 ) -> list[dict]:
-    """Return posts newest-first, paginated. Used by FeedPage initial load (DASH-01)."""
+    """Return posts newest-first with signal data joined. Used by FeedPage initial load (DASH-01)."""
     stmt = (
-        select(Post)
+        select(Post, Signal)
+        .outerjoin(Signal, Signal.post_id == Post.id)
         .order_by(Post.created_at.desc())
         .limit(limit)
         .offset(offset)
     )
     async with AsyncSessionLocal() as session:
         result = await session.execute(stmt)
-        posts = result.scalars().all()
-    return [
-        {
-            "id": p.id,
-            "platform": p.platform,
-            "content": p.content,
-            "posted_at": p.posted_at.isoformat(),
-            "created_at": p.created_at.isoformat(),
-            "is_filtered": p.is_filtered,
-            "filter_reason": p.filter_reason,
-        }
-        for p in posts
-    ]
+        rows = result.all()
+    out = []
+    for post, signal in rows:
+        out.append({
+            "id": post.id,
+            "platform": post.platform,
+            "content": post.content,
+            "posted_at": post.posted_at.isoformat(),
+            "created_at": post.created_at.isoformat(),
+            "is_filtered": post.is_filtered,
+            "filter_reason": post.filter_reason,
+            "signal": {
+                "sentiment": signal.sentiment,
+                "confidence": signal.confidence,
+                "affected_tickers": json.loads(signal.affected_tickers) if signal.affected_tickers else [],
+                "final_action": signal.final_action,
+                "reason_code": signal.reason_code,
+            } if signal else None,
+        })
+    return out
 
 
 @router.get("/trades")
