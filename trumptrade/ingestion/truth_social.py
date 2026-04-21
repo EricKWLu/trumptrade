@@ -19,6 +19,60 @@ from trumptrade.ingestion.filters import apply_filters
 logger = logging.getLogger(__name__)
 
 _BASE_URL = "https://truthsocial.com/api/v1/accounts/{account_id}/statuses"
+_OAUTH_TOKEN_URL = "https://truthsocial.com/oauth/token"
+_APPS_URL = "https://truthsocial.com/api/v1/apps"
+
+# In-process token cache — refreshed automatically on 401/403
+_cached_token: str | None = None
+
+
+async def _login() -> str | None:
+    """Obtain a fresh bearer token via Mastodon OAuth password grant.
+
+    Registers a one-off app to get client credentials, then exchanges
+    username+password for an access token. Returns None if credentials
+    are missing or the request fails.
+    """
+    settings = get_settings()
+    username = settings.truth_social_username
+    password = settings.truth_social_password
+    if not username or not password:
+        return None
+
+    async with httpx.AsyncClient(timeout=15.0) as client:
+        # Step 1: register app → get client_id + client_secret
+        try:
+            app_resp = await client.post(_APPS_URL, data={
+                "client_name": "trumptrade",
+                "redirect_uris": "urn:ietf:wg:oauth:2.0:oob",
+                "scopes": "read",
+            })
+            app_resp.raise_for_status()
+            app_data = app_resp.json()
+            client_id = app_data["client_id"]
+            client_secret = app_data["client_secret"]
+        except Exception as exc:
+            logger.error("Truth Social app registration failed: %s", exc)
+            return None
+
+        # Step 2: password grant → access_token
+        try:
+            token_resp = await client.post(_OAUTH_TOKEN_URL, data={
+                "grant_type": "password",
+                "client_id": client_id,
+                "client_secret": client_secret,
+                "username": username,
+                "password": password,
+                "scope": "read",
+            })
+            token_resp.raise_for_status()
+            token = token_resp.json().get("access_token")
+            if token:
+                logger.info("Truth Social: obtained fresh access token via login")
+            return token
+        except Exception as exc:
+            logger.error("Truth Social login failed: %s", exc)
+            return None
 
 
 def _strip_html(html: str) -> str:
@@ -58,33 +112,45 @@ async def _set_setting(key: str, value: str) -> None:
 async def _fetch_posts(account_id: str, since_id: str | None, token: str | None) -> list[dict]:
     """GET /api/v1/accounts/{account_id}/statuses from Truth Social.
 
-    Handles 401/403 gracefully — logs ERROR, returns empty list (D-05).
+    On 401/403: attempts auto-login once using username/password, then retries.
     On 5xx: raise_for_status() propagates to APScheduler for next-tick retry.
     """
+    global _cached_token
+
     params: dict[str, object] = {"limit": 20}
     if since_id:
         params["since_id"] = since_id
 
-    headers: dict[str, str] = {}
-    if token:
-        headers["Authorization"] = f"Bearer {token}"
-
     url = _BASE_URL.format(account_id=account_id)
-    try:
+
+    async def _do_get(t: str | None) -> httpx.Response:
+        headers = {"Authorization": f"Bearer {t}"} if t else {}
         async with httpx.AsyncClient(timeout=10.0) as client:
-            resp = await client.get(url, params=params, headers=headers)
+            return await client.get(url, params=params, headers=headers)
+
+    try:
+        resp = await _do_get(token)
     except httpx.RequestError as exc:
         logger.error("Truth Social network error: %s", exc)
         return []
 
     if resp.status_code in (401, 403):
-        logger.error(
-            "Truth Social returned %s — may require credentials (set TRUTH_SOCIAL_TOKEN in .env)",
-            resp.status_code,
-        )
-        return []
+        logger.warning("Truth Social %s — attempting auto-login", resp.status_code)
+        fresh = await _login()
+        if not fresh:
+            logger.error("Truth Social auto-login failed — set TRUTH_SOCIAL_USERNAME/PASSWORD in .env")
+            return []
+        _cached_token = fresh
+        try:
+            resp = await _do_get(fresh)
+        except httpx.RequestError as exc:
+            logger.error("Truth Social network error after login: %s", exc)
+            return []
+        if resp.status_code in (401, 403):
+            logger.error("Truth Social still %s after fresh login — credentials may be wrong", resp.status_code)
+            return []
 
-    resp.raise_for_status()  # propagates 5xx to APScheduler retry
+    resp.raise_for_status()
     return resp.json()
 
 
@@ -98,11 +164,14 @@ async def poll_truth_social() -> None:
     - Pre-filter via apply_filters() (INGEST-04 — sets is_filtered/filter_reason)
     - Cursor advance to max platform_post_id after successful poll (D-12)
     """
+    global _cached_token
     settings = get_settings()
     account_id = settings.truth_social_account_id
-    token = settings.truth_social_token or None  # empty string → None (no auth header)
+    # Priority: in-process cached token > static token from .env
+    token = _cached_token or settings.truth_social_token or None
 
     since_id = await _get_setting("last_truth_post_id")  # None on first run
+    staleness_minutes = int(await _get_setting("signal_staleness_minutes") or "5")
     statuses = await _fetch_posts(account_id, since_id, token)
 
     if not statuses:
@@ -128,6 +197,13 @@ async def poll_truth_social() -> None:
             except (ValueError, AttributeError):
                 logger.error("Truth Social: could not parse created_at=%r", created_at_str)
                 continue
+
+            # Mark catch-up posts as stale so they never reach analysis/trading
+            if not is_filtered:
+                age_seconds = (datetime.now(timezone.utc).replace(tzinfo=None) - posted_at).total_seconds()
+                if age_seconds > staleness_minutes * 60:
+                    is_filtered = True
+                    filter_reason = "stale_on_ingest"
 
             author: str | None = status.get("account", {}).get("username")
             platform_post_id: str = status["id"]

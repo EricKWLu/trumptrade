@@ -167,6 +167,7 @@ async def poll_twitter() -> None:
             return
 
     since_id = await _get_setting("last_x_post_id")  # None on first run
+    staleness_minutes = int(await _get_setting("signal_staleness_minutes") or "5")
 
     # Fetch tweets — sync call wrapped in executor (Pitfall 2)
     loop = asyncio.get_running_loop()
@@ -200,6 +201,13 @@ async def poll_twitter() -> None:
                 )
                 continue
             posted_at = tweet.created_at.astimezone(timezone.utc).replace(tzinfo=None)
+
+            # Mark catch-up posts as stale so they never reach analysis/trading
+            if not is_filtered:
+                age_seconds = (datetime.now(timezone.utc).replace(tzinfo=None) - posted_at).total_seconds()
+                if age_seconds > staleness_minutes * 60:
+                    is_filtered = True
+                    filter_reason = "stale_on_ingest"
 
             tweet_id = str(tweet.id)
             author = str(tweet.author_id) if tweet.author_id is not None else None

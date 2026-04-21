@@ -23,7 +23,9 @@ class Settings(BaseSettings):
     anthropic_api_key: str = ""
     groq_api_key: str = ""  # Optional — required only when llm_provider = "groq" (D-03)
     truth_social_account_id: str = "107780257626128497"
-    truth_social_token: str = ""   # Optional Bearer Token for Truth Social auth (future use)
+    truth_social_token: str = ""       # Optional — if set, skips auto-login
+    truth_social_username: str = ""    # Auto-login credentials (preferred over token)
+    truth_social_password: str = ""
 
     # Non-secret app config
     debug: bool = False
