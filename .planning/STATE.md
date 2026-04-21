@@ -12,7 +12,7 @@ See: .planning/PROJECT.md (updated 2026-04-19)
 Phase: 5 of 7 (Risk Guard + Integration) — Phase 4 complete
 Plan: 0 of TBD in current phase
 Status: Ready to discuss/plan
-Last activity: 2026-04-21 — Phase 4 complete (3/3 plans, LLM Analysis Engine)
+Last activity: 2026-04-21 — Phase 5 context gathered (discuss-phase complete)
 
 Progress: [████░░░░░░] 57%
 
@@ -68,5 +68,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-04-21
-Stopped at: Phase 4 complete — ready to discuss/plan Phase 5 (Risk Guard + Integration)
-Resume file: .planning/phases/05-risk-guard/ (if exists)
+Stopped at: Phase 5 context gathered — ready to plan Phase 5 (Risk Guard + Integration)
+Resume file: .planning/phases/05-risk-guard-integration/05-CONTEXT.md
