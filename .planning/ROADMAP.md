@@ -110,8 +110,13 @@ Plans:
   3. The portfolio view reads live positions and P&L directly from the Alpaca API — not from the bot's internal state
   4. A kill-switch toggle on the dashboard stops all trade execution immediately; an alert panel surfaces scraper failures and API errors as they occur
   5. Watchlist and risk settings (position size %, stop-loss %, max daily loss cap) are editable from the dashboard settings panel
-**Plans**: TBD
-**UI hint**: yes
+**Plans**: 5 plans
+Plans:
+- [ ] 06-01-PLAN.md — Dashboard package scaffold (ws.py, watchlist.py, __init__.py) + CORS + app.py wiring + worker.py broadcast patch
+- [ ] 06-02-PLAN.md — Data read endpoints (GET /posts, GET /trades, GET /portfolio, GET /alerts)
+- [ ] 06-03-PLAN.md — React Router v6 shell (router, AppShell, KillSwitchBtn, AlertPanel, api.ts, usePostFeed, page stubs)
+- [ ] 06-04-PLAN.md — FeedPage + PostCard (WebSocket push + initial load)
+- [ ] 06-05-PLAN.md — TradesPage + PortfolioPage + SettingsPage
 
 ### Phase 7: Benchmarks + Live Trading
 **Goal**: Users can measure whether the bot beats the market and optionally unlock live trading with real money
@@ -137,5 +142,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | 3. Ingestion Pipeline | 4/4 | Complete | 2026-04-21 |
 | 4. LLM Analysis Engine | 3/3 | Complete | 2026-04-21 |
 | 5. Risk Guard + Integration | 3/3 | Complete | 2026-04-21 |
-| 6. Web Dashboard | 0/0 | Not started | - |
+| 6. Web Dashboard | 0/5 | In progress | - |
 | 7. Benchmarks + Live Trading | 0/0 | Not started | - |
