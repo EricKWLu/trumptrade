@@ -12,7 +12,12 @@ export default defineConfig({
   },
   server: {
     proxy: {
-      "/api": "http://localhost:8000",
+      // Proxy all backend REST routes to FastAPI (port 8000)
+      // Keeps BASE="" in api.ts — same-origin assumption works in prod too
+      "^/(posts|trades|portfolio|alerts|watchlist|settings|trading|health)": {
+        target: "http://localhost:8000",
+        changeOrigin: true,
+      },
     },
   },
 })
