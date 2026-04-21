@@ -5,14 +5,14 @@
 See: .planning/PROJECT.md (updated 2026-04-19)
 
 **Core value:** Automatically detect and act on Trump's social media posts faster than a human can react — turning his words into trade signals before the market moves.
-**Current focus:** Phase 5 - Risk Guard + Integration
+**Current focus:** Phase 6 - Web Dashboard
 
 ## Current Position
 
-Phase: 5 of 7 (Risk Guard + Integration) — Phase 5 complete
-Plan: 3 of 3 in current phase
-Status: Phase complete — ready for Phase 6
-Last activity: 2026-04-21 — Phase 5 plan 03 complete (settings router + end-to-end human verify)
+Phase: 6 of 7 (Web Dashboard) — context gathered, ready for planning
+Plan: 0 of TBD in current phase
+Status: Context captured — ready for /gsd-plan-phase 6
+Last activity: 2026-04-21 — Phase 6 context gathered (layout, feed, trade log, kill switch, settings)
 
 Progress: [███████░░░] 71%
 
@@ -75,5 +75,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-04-21
-Stopped at: Phase 5 complete — all 3 plans done, end-to-end pipeline verified by human
-Resume file: .planning/phases/06-web-dashboard/06-PLAN.md (Phase 6 not yet planned)
+Stopped at: Phase 6 context gathered — all 4 areas discussed
+Resume file: .planning/phases/06-web-dashboard/06-CONTEXT.md
