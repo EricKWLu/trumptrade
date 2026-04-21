@@ -1,4 +1,4 @@
-import { Globe, Twitter } from "lucide-react"
+import { Globe, X as XIcon } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
@@ -36,7 +36,7 @@ function relativeTime(isoString: string): string {
   return `${diffDays}d ago`
 }
 
-function SentimentBadge({ sentiment, confidence }: { sentiment: string; confidence: number }) {
+function SentimentBadge({ sentiment }: { sentiment: string; confidence: number }) {
   const classes =
     sentiment === "BULLISH"
       ? "bg-green-500/10 text-green-400"
@@ -52,7 +52,7 @@ function SentimentBadge({ sentiment, confidence }: { sentiment: string; confiden
 }
 
 function PlatformIcon({ platform }: { platform: string }) {
-  if (platform === "twitter") return <Twitter size={16} className="text-muted-foreground" />
+  if (platform === "twitter") return <XIcon size={16} className="text-muted-foreground" />
   return <Globe size={16} className="text-muted-foreground" />
 }
 
