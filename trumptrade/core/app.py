@@ -75,6 +75,10 @@ def create_app() -> FastAPI:
     from trumptrade.ingestion import register_ingestion_jobs  # local import avoids circular import
     register_ingestion_jobs(scheduler)
 
+    # ── Phase 4: analysis jobs ───────────────────────────────────────────────
+    from trumptrade.analysis import register_analysis_jobs  # local import avoids circular import
+    register_analysis_jobs(scheduler)
+
     @app.get("/health")
     async def health() -> dict:
         """Health check — confirms server is up and scheduler is running."""
