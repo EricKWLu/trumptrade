@@ -15,7 +15,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 1: Foundation** - Project scaffolding, environment config, DB schema, migrations, and watchlist settings
 - [x] **Phase 2: Alpaca Executor** - Paper trading with bracket stop-loss orders and kill-switch endpoint
 - [x] **Phase 3: Ingestion Pipeline** - X/Twitter + Truth Social pollers, SHA-256 dedup, heartbeat alert
-- [ ] **Phase 4: LLM Analysis Engine** - Signal classification, keyword rule overlay, confidence gate, audit trail
+- [x] **Phase 4: LLM Analysis Engine** - Signal classification, keyword rule overlay, confidence gate, audit trail
 - [ ] **Phase 5: Risk Guard + Integration** - asyncio.Queue chokepoint, position sizing, daily loss cap, market hours, full pipeline wired end-to-end
 - [ ] **Phase 6: Web Dashboard** - Live post feed, trade log, portfolio view, bot kill switch, settings UI
 - [ ] **Phase 7: Benchmarks + Live Trading** - SPY/QQQ/random shadow portfolios, comparison chart, two-step live trading unlock
@@ -80,9 +80,9 @@ Plans:
   4. Every signal has a complete audit record: raw LLM prompt, raw LLM response, keyword matches, final action, and reason code — queryable from the database
 **Plans**: 3 plans
 Plans:
-- [ ] 04-01-PLAN.md — BaseAdapter + SignalResult + AnthropicAdapter + GroqAdapter + dispatcher + config patch + Alembic migration 004
-- [ ] 04-02-PLAN.md — analysis_worker() with anti-join query, keyword overlay, confidence gate, Signal insert
-- [ ] 04-03-PLAN.md — analysis/__init__.py (register_analysis_jobs) + app.py wiring
+- [x] 04-01-PLAN.md — BaseAdapter + SignalResult + AnthropicAdapter + GroqAdapter + dispatcher + config patch + Alembic migration 004
+- [x] 04-02-PLAN.md — analysis_worker() with anti-join query, keyword overlay, confidence gate, Signal insert
+- [x] 04-03-PLAN.md — analysis/__init__.py (register_analysis_jobs) + app.py wiring
 
 ### Phase 5: Risk Guard + Integration
 **Goal**: Signals flow through a single risk chokepoint before reaching the executor, with capital protected by position sizing, daily loss cap, and market hours enforcement
@@ -131,7 +131,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | 1. Foundation | 5/5 | Complete | 2026-04-19 |
 | 2. Alpaca Executor | 2/2 | Complete | 2026-04-20 |
 | 3. Ingestion Pipeline | 4/4 | Complete | 2026-04-21 |
-| 4. LLM Analysis Engine | 0/3 | In progress | - |
+| 4. LLM Analysis Engine | 3/3 | Complete | 2026-04-21 |
 | 5. Risk Guard + Integration | 0/0 | Not started | - |
 | 6. Web Dashboard | 0/0 | Not started | - |
 | 7. Benchmarks + Live Trading | 0/0 | Not started | - |
