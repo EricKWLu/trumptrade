@@ -90,8 +90,7 @@ def create_app() -> FastAPI:
 
     # ── Phase 5: risk settings router ───────────────────────────────────────
     from trumptrade.risk_guard import settings_router      # local import avoids circular import
-    if settings_router is not None:  # guard for plan execution order (router.py created in plan 03)
-        app.include_router(settings_router, prefix="/settings", tags=["settings"])
+    app.include_router(settings_router, prefix="/settings", tags=["settings"])
 
     # ── Phase 3: ingestion jobs ──────────────────────────────────────────────
     from trumptrade.ingestion import register_ingestion_jobs  # local import avoids circular import
