@@ -128,6 +128,8 @@ async def _check_daily_cap(trading_client: TradingClient, loop: asyncio.Abstract
         return True
     except APIError as exc:
         logger.error("risk_consumer: get_account failed: %s — allowing trade", exc)
+        from trumptrade.dashboard.router import append_alert  # local import
+        append_alert("alpaca", f"Alpaca get_account error: {exc}")
         return True  # fail-open: API error should not block all trades
 
 
@@ -139,6 +141,8 @@ async def _get_equity(trading_client: TradingClient, loop: asyncio.AbstractEvent
         return float(raw) if raw is not None else None
     except APIError as exc:
         logger.error("risk_consumer: get_account for equity failed: %s", exc)
+        from trumptrade.dashboard.router import append_alert  # local import
+        append_alert("alpaca", f"Alpaca get_equity error: {exc}")
         return None
 
 

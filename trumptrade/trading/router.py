@@ -57,3 +57,22 @@ async def kill_switch(body: KillSwitchRequest) -> KillSwitchResponse:
     await _executor.set_bot_enabled(body.enabled)
     logger.info("Kill switch toggled: bot_enabled=%s", body.enabled)
     return KillSwitchResponse(bot_enabled=body.enabled, ok=True)
+
+
+@router.get("/status")
+async def trading_status() -> dict:
+    """Return current bot_enabled state for KillSwitchBtn initial load (D-09).
+
+    Reads from AppSettings — same source as the executor's kill-switch check.
+    bot_enabled is stored as string "true"/"false" in AppSettings (see executor.py line 32).
+    """
+    from sqlalchemy import select
+    from trumptrade.core.db import AsyncSessionLocal
+    from trumptrade.core.models import AppSettings
+
+    async with AsyncSessionLocal() as session:
+        result = await session.execute(
+            select(AppSettings.value).where(AppSettings.key == "bot_enabled")
+        )
+        val = result.scalar_one_or_none()
+    return {"bot_enabled": val == "true"}

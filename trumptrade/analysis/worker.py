@@ -277,6 +277,27 @@ async def analysis_worker() -> None:
             session.add(signal)
             await session.commit()
 
+        # Phase 6: broadcast post + signal to WebSocket clients after commit (D-06).
+        # Local import inside loop body avoids circular import.
+        from trumptrade.dashboard.ws import manager as _ws_manager  # local import
+        import json as _json
+        await _ws_manager.broadcast(_json.dumps({
+            "type": "post",
+            "id": post.id,
+            "platform": post.platform,
+            "content": post.content,
+            "posted_at": post.posted_at.isoformat(),
+            "is_filtered": post.is_filtered,
+            "filter_reason": post.filter_reason,
+            "signal": {
+                "sentiment": signal_result.sentiment,
+                "confidence": signal_result.confidence,
+                "affected_tickers": final_tickers,
+                "final_action": final_action,
+                "reason_code": reason_code,
+            },
+        }))
+
         # Phase 5: enqueue BUY/SELL signals onto risk_guard queue (D-01)
         # SKIP signals are never enqueued — they are already in DB for audit.
         # Local import inside loop body avoids circular import (established codebase pattern).

@@ -84,6 +84,16 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
     )
 
+    # ── Phase 6: CORS for Vite dev server ───────────────────────────────────
+    from fastapi.middleware.cors import CORSMiddleware
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=["http://localhost:5173"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+
     # ── Phase 2: trading router ──────────────────────────────────────────────
     from trumptrade.trading import trading_router          # local import avoids circular import
     app.include_router(trading_router, prefix="/trading", tags=["trading"])
@@ -91,6 +101,13 @@ def create_app() -> FastAPI:
     # ── Phase 5: risk settings router ───────────────────────────────────────
     from trumptrade.risk_guard import settings_router      # local import avoids circular import
     app.include_router(settings_router, prefix="/settings", tags=["settings"])
+
+    # ── Phase 6: dashboard + WebSocket routers ───────────────────────────────
+    from trumptrade.dashboard import watchlist_router, ws_router        # local import
+    from trumptrade.dashboard.router import router as dashboard_router  # local import
+    app.include_router(dashboard_router, tags=["dashboard"])
+    app.include_router(watchlist_router, tags=["watchlist"])
+    app.include_router(ws_router, tags=["websocket"])
 
     # ── Phase 3: ingestion jobs ──────────────────────────────────────────────
     from trumptrade.ingestion import register_ingestion_jobs  # local import avoids circular import

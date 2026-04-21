@@ -68,3 +68,5 @@ async def check_heartbeat() -> None:
 
     if count == 0:
         logger.warning("HEARTBEAT: no Truth Social posts in last 30 minutes")
+        from trumptrade.dashboard.router import append_alert  # local import avoids circular
+        append_alert("heartbeat", "No Truth Social posts in last 30 minutes (scraper silence)")
