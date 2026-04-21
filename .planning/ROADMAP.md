@@ -78,7 +78,11 @@ Plans:
   2. Keyword rules can override or supplement LLM output — a post containing "tariffs" applies the configured keyword action regardless of LLM sentiment
   3. Signals below the 0.7 confidence threshold are logged with reason code `BELOW_THRESHOLD` and never forwarded to the executor
   4. Every signal has a complete audit record: raw LLM prompt, raw LLM response, keyword matches, final action, and reason code — queryable from the database
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 04-01-PLAN.md — BaseAdapter + SignalResult + AnthropicAdapter + GroqAdapter + dispatcher + config patch + Alembic migration 004
+- [ ] 04-02-PLAN.md — analysis_worker() with anti-join query, keyword overlay, confidence gate, Signal insert
+- [ ] 04-03-PLAN.md — analysis/__init__.py (register_analysis_jobs) + app.py wiring
 
 ### Phase 5: Risk Guard + Integration
 **Goal**: Signals flow through a single risk chokepoint before reaching the executor, with capital protected by position sizing, daily loss cap, and market hours enforcement
@@ -127,7 +131,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | 1. Foundation | 5/5 | Complete | 2026-04-19 |
 | 2. Alpaca Executor | 2/2 | Complete | 2026-04-20 |
 | 3. Ingestion Pipeline | 4/4 | Complete | 2026-04-21 |
-| 4. LLM Analysis Engine | 0/0 | Not started | - |
+| 4. LLM Analysis Engine | 0/3 | In progress | - |
 | 5. Risk Guard + Integration | 0/0 | Not started | - |
 | 6. Web Dashboard | 0/0 | Not started | - |
 | 7. Benchmarks + Live Trading | 0/0 | Not started | - |
