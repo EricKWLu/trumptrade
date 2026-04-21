@@ -94,7 +94,11 @@ Plans:
   3. When cumulative daily losses reach the configured max daily loss cap (read from live Alpaca account), all subsequent signals are blocked until the next trading day
   4. End-to-end: a real Trump post on either platform flows through ingestion → analysis → risk guard → paper trade execution with the full audit chain intact
   5. User can update position size %, stop-loss %, and daily loss cap from a settings endpoint and changes take effect on the next signal
-**Plans**: TBD
+**Plans**: 3 plans
+Plans:
+- [ ] 05-01-PLAN.md — risk_guard package scaffold (guard.py, __init__.py) + Alembic migration 005
+- [ ] 05-02-PLAN.md — Patch analysis_worker.py (enqueue) + executor.py (signal_id) + app.py (lifespan wiring)
+- [ ] 05-03-PLAN.md — risk_guard/router.py (GET/PATCH /settings/risk) + end-to-end human verify
 
 ### Phase 6: Web Dashboard
 **Goal**: Users can monitor the full pipeline, review all trades, see live portfolio state, and control the bot from a browser
@@ -132,6 +136,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | 2. Alpaca Executor | 2/2 | Complete | 2026-04-20 |
 | 3. Ingestion Pipeline | 4/4 | Complete | 2026-04-21 |
 | 4. LLM Analysis Engine | 3/3 | Complete | 2026-04-21 |
-| 5. Risk Guard + Integration | 0/0 | Not started | - |
+| 5. Risk Guard + Integration | 0/3 | Not started | - |
 | 6. Web Dashboard | 0/0 | Not started | - |
 | 7. Benchmarks + Live Trading | 0/0 | Not started | - |
