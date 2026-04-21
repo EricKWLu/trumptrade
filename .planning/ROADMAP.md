@@ -19,6 +19,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 5: Risk Guard + Integration** - asyncio.Queue chokepoint, position sizing, daily loss cap, market hours, full pipeline wired end-to-end
 - [x] **Phase 6: Web Dashboard** - Live post feed, trade log, portfolio view, bot kill switch, settings UI
 - [ ] **Phase 7: Benchmarks + Live Trading** - SPY/QQQ/random shadow portfolios, comparison chart, two-step live trading unlock
+- [ ] **Phase 8: Deployment** - Oracle Cloud Free Tier, systemd service, Nginx reverse proxy, persistent SQLite, SSH management
 
 ## Phase Details
 
@@ -130,10 +131,24 @@ Plans:
 **Plans**: TBD
 **UI hint**: yes
 
+### Phase 8: Deployment
+**Goal**: The app runs continuously on a cloud VM with no PC dependency, auto-restarts on crash, and is manageable over SSH
+**Depends on**: Phase 7
+**Requirements**: (operational, no code requirements)
+**Success Criteria** (what must be TRUE):
+  1. App runs as a `systemd` service on Oracle Cloud Free Tier (or equivalent VPS); survives reboots automatically
+  2. SQLite database persists on the VM's block storage; no data loss on restart
+  3. `.env` secrets are stored securely on the VM and absent from version control
+  4. Deployment checklist covers: OS setup, Python env, clone + install, `.env` population, `systemd` unit file, `journalctl` log access, and Nginx reverse proxy for the dashboard
+  5. Dashboard is reachable from a browser without port-forwarding or an SSH tunnel
+**Plans**: 1 plan
+Plans:
+- [ ] 08-01-PLAN.md — systemd service + Nginx reverse proxy + Oracle Cloud Free Tier setup checklist
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
+Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -144,3 +159,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7
 | 5. Risk Guard + Integration | 3/3 | Complete | 2026-04-21 |
 | 6. Web Dashboard | 5/5 | Complete | 2026-04-21 |
 | 7. Benchmarks + Live Trading | 0/0 | Not started | - |
+| 8. Deployment | 0/1 | Not started | - |
