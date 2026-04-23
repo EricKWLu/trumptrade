@@ -18,7 +18,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 4: LLM Analysis Engine** - Signal classification, keyword rule overlay, confidence gate, audit trail
 - [x] **Phase 5: Risk Guard + Integration** - asyncio.Queue chokepoint, position sizing, daily loss cap, market hours, full pipeline wired end-to-end
 - [x] **Phase 6: Web Dashboard** - Live post feed, trade log, portfolio view, bot kill switch, settings UI
-- [ ] **Phase 7: Benchmarks + Live Trading** - SPY/QQQ/random shadow portfolios, comparison chart, two-step live trading unlock
+- [x] **Phase 7: Benchmarks + Live Trading** - SPY/QQQ/random shadow portfolios, comparison chart, two-step live trading unlock
 - [ ] **Phase 8: Deployment** - Oracle Cloud Free Tier, systemd service, Nginx reverse proxy, persistent SQLite, SSH management
 
 ## Phase Details
@@ -133,7 +133,7 @@ Plans:
 - [x] 07-01-PLAN.md — Alembic migration 006 (unique index) + benchmarks/__init__.py + benchmarks/job.py (CronTrigger snapshot job)
 - [x] 07-02-PLAN.md — benchmarks/router.py (GET /benchmarks) + trading/router.py patch (POST /set-mode) + core/app.py wiring
 - [x] 07-03-PLAN.md — npm deps + api.ts patch + router.tsx + BenchmarksPage.tsx (Recharts LineChart)
-- [ ] 07-04-PLAN.md — LiveModeModal.tsx + AppShell patches + SettingsPage Trading Mode section + human verify
+- [x] 07-04-PLAN.md — LiveModeModal.tsx + AppShell patches + SettingsPage Trading Mode section + human verify
 
 ### Phase 8: Deployment
 **Goal**: The app runs continuously on a cloud VM with no PC dependency, auto-restarts on crash, and is manageable over SSH
@@ -162,5 +162,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 4. LLM Analysis Engine | 3/3 | Complete | 2026-04-21 |
 | 5. Risk Guard + Integration | 3/3 | Complete | 2026-04-21 |
 | 6. Web Dashboard | 5/5 | Complete | 2026-04-21 |
-| 7. Benchmarks + Live Trading | 3/4 | In progress | - |
+| 7. Benchmarks + Live Trading | 4/4 | Complete | 2026-04-23 |
 | 8. Deployment | 0/1 | Not started | - |

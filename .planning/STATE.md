@@ -10,11 +10,11 @@ See: .planning/PROJECT.md (updated 2026-04-19)
 ## Current Position
 
 Phase: 7 of 7 (Benchmarks + Live Trading) — executing
-Plan: 3 of 4 in current phase
-Status: Phase 7 executing — 07-03 complete (BenchmarksPage + Recharts LineChart + api.ts + router.tsx)
-Last activity: 2026-04-23 — 07-03 complete: BenchmarksPage.tsx + BenchmarkChart + recharts install + dialog.tsx
+Plan: 4 of 4 in current phase
+Status: Phase 7 complete — 07-04 complete (LiveModeModal + AppShell LIVE banner + SettingsPage Trading Mode)
+Last activity: 2026-04-23 — 07-04 complete: LiveModeModal.tsx + AppShell LIVE banner + SettingsPage TradingModeSection
 
-Progress: [█████████░] 93%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -33,7 +33,7 @@ Progress: [█████████░] 93%
 | 4. LLM Analysis Engine | 3/3 | ~25 min | ~8 min |
 | 5. Risk Guard + Integration | 3/3 | ~19 min | ~6 min |
 | 6. Web Dashboard | 5/5 | ~40 min | ~8 min |
-| 7. Benchmarks + Live Trading | 3/4 | ~12 min | ~4 min |
+| 7. Benchmarks + Live Trading | 4/4 | ~14 min | ~4 min |
 
 **Recent Trend:**
 - Last 3 plans: 04-03, 05-01
@@ -69,6 +69,9 @@ Recent decisions affecting current work:
 - BenchmarkChart inline in BenchmarksPage (no separate file) — single-use component per UI-SPEC Section 2d
 - connectNulls=false on all 4 Line components — backend returns null for portfolios not yet started
 - staleTime=refetchInterval=300_000 for benchmarks — data only updates at market close (5 min polling)
+- TanStack Query deduplicates portfolio-mode fetch — AppShell, TradingModeBadge, TradingModeSection all use queryKey=["portfolio-mode"]; one network call
+- LiveModeModal resets input and error on close regardless of trigger (backdrop, X button, or dismiss button)
+- base-ui Dialog onOpenChange receives (open, eventDetails) — reset happens in handleOpenChange(false)
 
 ### Pending Todos
 
@@ -87,5 +90,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-04-23
-Stopped at: Phase 7 plan 07-03 complete — BenchmarksPage + Recharts LineChart + api.ts + router.tsx
-Resume file: .planning/phases/07-benchmarks-live-trading/07-04-PLAN.md
+Stopped at: Phase 7 plan 07-04 complete — LiveModeModal + AppShell LIVE banner + SettingsPage Trading Mode section
+Resume file: None — Phase 7 complete. Next: Phase 8 Deployment
