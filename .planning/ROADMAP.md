@@ -131,7 +131,7 @@ Plans:
 **Plans**: 4 plans
 Plans:
 - [x] 07-01-PLAN.md — Alembic migration 006 (unique index) + benchmarks/__init__.py + benchmarks/job.py (CronTrigger snapshot job)
-- [ ] 07-02-PLAN.md — benchmarks/router.py (GET /benchmarks) + trading/router.py patch (POST /set-mode) + core/app.py wiring
+- [x] 07-02-PLAN.md — benchmarks/router.py (GET /benchmarks) + trading/router.py patch (POST /set-mode) + core/app.py wiring
 - [ ] 07-03-PLAN.md — npm deps + api.ts patch + router.tsx + BenchmarksPage.tsx (Recharts LineChart)
 - [ ] 07-04-PLAN.md — LiveModeModal.tsx + AppShell patches + SettingsPage Trading Mode section + human verify
 
@@ -162,5 +162,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 4. LLM Analysis Engine | 3/3 | Complete | 2026-04-21 |
 | 5. Risk Guard + Integration | 3/3 | Complete | 2026-04-21 |
 | 6. Web Dashboard | 5/5 | Complete | 2026-04-21 |
-| 7. Benchmarks + Live Trading | 1/4 | In progress | - |
+| 7. Benchmarks + Live Trading | 2/4 | In progress | - |
 | 8. Deployment | 0/1 | Not started | - |

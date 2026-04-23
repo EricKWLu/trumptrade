@@ -10,9 +10,9 @@ See: .planning/PROJECT.md (updated 2026-04-19)
 ## Current Position
 
 Phase: 7 of 7 (Benchmarks + Live Trading) — executing
-Plan: 1 of 4 in current phase
-Status: Phase 7 executing — 07-01 complete (migration 006 + benchmarks package)
-Last activity: 2026-04-23 — 07-01 complete: Alembic migration 006 + benchmarks snapshot job
+Plan: 2 of 4 in current phase
+Status: Phase 7 executing — 07-02 complete (GET /benchmarks + POST /trading/set-mode + app.py wiring)
+Last activity: 2026-04-23 — 07-02 complete: benchmarks/router.py + trading/set-mode + create_app wiring
 
 Progress: [█████████░] 91%
 
@@ -33,7 +33,7 @@ Progress: [█████████░] 91%
 | 4. LLM Analysis Engine | 3/3 | ~25 min | ~8 min |
 | 5. Risk Guard + Integration | 3/3 | ~19 min | ~6 min |
 | 6. Web Dashboard | 5/5 | ~40 min | ~8 min |
-| 7. Benchmarks + Live Trading | 1/4 | ~8 min | ~8 min |
+| 7. Benchmarks + Live Trading | 2/4 | ~10 min | ~5 min |
 
 **Recent Trend:**
 - Last 3 plans: 04-03, 05-01
@@ -63,6 +63,9 @@ Recent decisions affecting current work:
 - Holiday detection: None return from _fetch_close_sync aborts job before writing any rows (atomic)
 - Random baseline carries cash in positions_json under 'cash' key — rehydrated from last snapshot
 - register_benchmark_jobs() uses misfire_grace_time=300 (5 min) for cron jobs vs 15s for interval jobs
+- GET /benchmarks returns {"snapshots": [...]} wrapper dict (not bare list) — matches D-09 response shape
+- POST /set-mode returns 422 for invalid mode or confirmed=False — two-gate validation (T-07-04)
+- Normalization uses first available NAV per portfolio — handles staggered starts with None for missing values
 
 ### Pending Todos
 
@@ -81,5 +84,5 @@ None yet.
 ## Session Continuity
 
 Last session: 2026-04-23
-Stopped at: Phase 7 plan 07-01 complete — migration 006 + benchmarks package (snapshot job)
-Resume file: .planning/phases/07-benchmarks-live-trading/07-02-PLAN.md
+Stopped at: Phase 7 plan 07-02 complete — GET /benchmarks + POST /trading/set-mode + app.py wiring
+Resume file: .planning/phases/07-benchmarks-live-trading/07-03-PLAN.md
