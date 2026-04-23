@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { LiveModeModal } from "@/components/LiveModeModal"
 import { X, Plus } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -221,6 +222,54 @@ function RiskControlsSection() {
   )
 }
 
+// ── Trading Mode Section ──────────────────────────────────────────────────────
+
+function TradingModeSection() {
+  const [modalOpen, setModalOpen] = useState(false)
+  const { data: portfolioData } = useQuery({
+    queryKey: ["portfolio-mode"],
+    queryFn: () => api.portfolio(),
+    staleTime: 30_000,
+  })
+  const mode = portfolioData?.trading_mode ?? "paper"
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle className="text-xl font-semibold">Trading Mode</CardTitle>
+        <p className="text-sm text-muted-foreground">
+          Switch between paper (simulated) and live (real money) trading.
+        </p>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <div className="flex items-center gap-3">
+          <span className="text-sm font-semibold text-foreground">Current mode:</span>
+          {mode === "live" ? (
+            <Badge className="bg-red-500/10 text-red-400 border border-red-500/20 font-semibold text-xs">
+              LIVE
+            </Badge>
+          ) : (
+            <Badge className="bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 font-semibold text-xs">
+              PAPER
+            </Badge>
+          )}
+        </div>
+        <Button
+          variant={mode === "live" ? "outline" : "destructive"}
+          onClick={() => setModalOpen(true)}
+        >
+          {mode === "live" ? "Switch to PAPER Trading" : "Switch to LIVE Trading"}
+        </Button>
+        <LiveModeModal
+          isLive={mode === "live"}
+          open={modalOpen}
+          onClose={() => setModalOpen(false)}
+        />
+      </CardContent>
+    </Card>
+  )
+}
+
 // ── Page ──────────────────────────────────────────────────────────────────────
 
 export default function SettingsPage() {
@@ -230,6 +279,7 @@ export default function SettingsPage() {
       <div className="space-y-8">
         <WatchlistSection />
         <RiskControlsSection />
+        <TradingModeSection />
       </div>
     </div>
   )

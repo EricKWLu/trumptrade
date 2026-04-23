@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from "react-router-dom"
-import { Zap, BarChart2, TrendingUp, Settings } from "lucide-react"
+import { Zap, BarChart2, TrendingUp, Settings, LineChart } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { to: "/", end: true, icon: Zap, label: "Feed" },
   { to: "/trades", end: false, icon: BarChart2, label: "Trades" },
   { to: "/portfolio", end: false, icon: TrendingUp, label: "Portfolio" },
+  { to: "/benchmarks", end: false, icon: LineChart, label: "Benchmarks" },
   { to: "/settings", end: false, icon: Settings, label: "Settings" },
 ]
 
@@ -42,6 +43,14 @@ function TradingModeBadge() {
 }
 
 export default function AppShell() {
+  const { data: modeData } = useQuery({
+    queryKey: ["portfolio-mode"],
+    queryFn: () => api.portfolio(),
+    staleTime: 30_000,
+    refetchInterval: 60_000,
+  })
+  const mode = modeData?.trading_mode ?? "paper"
+
   return (
     <div className="flex h-screen bg-background">
       {/* Sidebar — 240px fixed, never collapses (D-01) */}
@@ -86,6 +95,11 @@ export default function AppShell() {
 
       {/* Main content area */}
       <main className="flex-1 overflow-auto">
+        {mode === "live" && (
+          <div className="bg-red-500/10 border-b border-red-500/30 px-4 py-2 text-center text-red-400 text-sm font-semibold tracking-wide">
+            LIVE TRADING ACTIVE — real money at risk
+          </div>
+        )}
         <Outlet />
       </main>
     </div>
