@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-04-19)
 
 ## Current Position
 
-Phase: 7 of 7 (Benchmarks + Live Trading) — not yet planned
-Plan: 0 of TBD in current phase
-Status: Phase 6 complete — ready to discuss/plan Phase 7
-Last activity: 2026-04-21 — Phase 6 execution complete (all 5 plans, human verification passed)
+Phase: 7 of 7 (Benchmarks + Live Trading) — executing
+Plan: 1 of 4 in current phase
+Status: Phase 7 executing — 07-01 complete (migration 006 + benchmarks package)
+Last activity: 2026-04-23 — 07-01 complete: Alembic migration 006 + benchmarks snapshot job
 
-Progress: [█████████░] 86%
+Progress: [█████████░] 91%
 
 ## Performance Metrics
 
@@ -33,6 +33,7 @@ Progress: [█████████░] 86%
 | 4. LLM Analysis Engine | 3/3 | ~25 min | ~8 min |
 | 5. Risk Guard + Integration | 3/3 | ~19 min | ~6 min |
 | 6. Web Dashboard | 5/5 | ~40 min | ~8 min |
+| 7. Benchmarks + Live Trading | 1/4 | ~8 min | ~8 min |
 
 **Recent Trend:**
 - Last 3 plans: 04-03, 05-01
@@ -58,6 +59,10 @@ Recent decisions affecting current work:
 - router.py uses _read_setting() helper per key (4 separate selects) — avoids complex multi-key query; DB is SQLite local, overhead negligible
 - PATCH with empty body returns 200 with current values unchanged — correct PATCH semantics (T-05-12: not a vulnerability)
 - None guard removed from app.py — router.py now exists; unconditional include_router() is cleaner
+- STARTING_NAV=100_000.0 as virtual starting capital for all 3 shadow portfolios
+- Holiday detection: None return from _fetch_close_sync aborts job before writing any rows (atomic)
+- Random baseline carries cash in positions_json under 'cash' key — rehydrated from last snapshot
+- register_benchmark_jobs() uses misfire_grace_time=300 (5 min) for cron jobs vs 15s for interval jobs
 
 ### Pending Todos
 
@@ -75,6 +80,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-04-21
-Stopped at: Phase 6 complete — all 5 plans executed, human verification passed
-Resume file: .planning/phases/07-benchmarks/07-CONTEXT.md (not yet created)
+Last session: 2026-04-23
+Stopped at: Phase 7 plan 07-01 complete — migration 006 + benchmarks package (snapshot job)
+Resume file: .planning/phases/07-benchmarks-live-trading/07-02-PLAN.md
