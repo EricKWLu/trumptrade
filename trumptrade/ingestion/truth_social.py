@@ -24,6 +24,9 @@ _APPS_URL = "https://truthsocial.com/api/v1/apps"
 
 # In-process token cache — refreshed automatically on 401/403
 _cached_token: str | None = None
+# Set to True if auto-login fails permanently (e.g. /api/v1/apps blocked by Truth Social).
+# Prevents retry spam every 60-second poll cycle.
+_login_blocked: bool = False
 
 
 async def _login() -> str | None:
@@ -32,7 +35,15 @@ async def _login() -> str | None:
     Registers a one-off app to get client credentials, then exchanges
     username+password for an access token. Returns None if credentials
     are missing or the request fails.
+
+    If /api/v1/apps returns 403 (Truth Social has blocked app registration),
+    sets _login_blocked=True so subsequent polls skip the attempt entirely.
+    Fix: set TRUTH_SOCIAL_TOKEN in .env with a manually obtained access token.
     """
+    global _login_blocked
+    if _login_blocked:
+        return None
+
     settings = get_settings()
     username = settings.truth_social_username
     password = settings.truth_social_password
@@ -47,6 +58,14 @@ async def _login() -> str | None:
                 "redirect_uris": "urn:ietf:wg:oauth:2.0:oob",
                 "scopes": "read",
             })
+            if app_resp.status_code == 403:
+                _login_blocked = True
+                logger.error(
+                    "Truth Social blocked app registration (403). "
+                    "Auto-login disabled until restart. "
+                    "Fix: obtain a token manually and set TRUTH_SOCIAL_TOKEN=<token> in .env"
+                )
+                return None
             app_resp.raise_for_status()
             app_data = app_resp.json()
             client_id = app_data["client_id"]
@@ -138,7 +157,10 @@ async def _fetch_posts(account_id: str, since_id: str | None, token: str | None)
         logger.warning("Truth Social %s — attempting auto-login", resp.status_code)
         fresh = await _login()
         if not fresh:
-            logger.error("Truth Social auto-login failed — set TRUTH_SOCIAL_USERNAME/PASSWORD in .env")
+            logger.error(
+                "Truth Social auto-login failed — "
+                "set TRUTH_SOCIAL_TOKEN=<token> in .env (obtain manually from browser devtools)"
+            )
             return []
         _cached_token = fresh
         try:
