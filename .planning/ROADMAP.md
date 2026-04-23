@@ -128,8 +128,12 @@ Plans:
   2. A random-trade baseline shadow portfolio executes random buy/sell decisions on watchlist tickers over the same period
   3. The dashboard comparison chart shows bot performance vs. SPY, QQQ, and random baseline on the same time axis
   4. Switching to live trading mode requires explicit two-step confirmation from the dashboard; the UI shows a persistent `LIVE` mode indicator when active; switching back to paper requires the same confirmation
-**Plans**: TBD
-**UI hint**: yes
+**Plans**: 4 plans
+Plans:
+- [ ] 07-01-PLAN.md — Alembic migration 006 (unique index) + benchmarks/__init__.py + benchmarks/job.py (CronTrigger snapshot job)
+- [ ] 07-02-PLAN.md — benchmarks/router.py (GET /benchmarks) + trading/router.py patch (POST /set-mode) + core/app.py wiring
+- [ ] 07-03-PLAN.md — npm deps + api.ts patch + router.tsx + BenchmarksPage.tsx (Recharts LineChart)
+- [ ] 07-04-PLAN.md — LiveModeModal.tsx + AppShell patches + SettingsPage Trading Mode section + human verify
 
 ### Phase 8: Deployment
 **Goal**: The app runs continuously on a cloud VM with no PC dependency, auto-restarts on crash, and is manageable over SSH
@@ -158,5 +162,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8
 | 4. LLM Analysis Engine | 3/3 | Complete | 2026-04-21 |
 | 5. Risk Guard + Integration | 3/3 | Complete | 2026-04-21 |
 | 6. Web Dashboard | 5/5 | Complete | 2026-04-21 |
-| 7. Benchmarks + Live Trading | 0/0 | Not started | - |
+| 7. Benchmarks + Live Trading | 0/4 | Not started | - |
 | 8. Deployment | 0/1 | Not started | - |
