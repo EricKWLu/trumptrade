@@ -1,0 +1,23 @@
+[Unit]
+Description=TrumpTrade Bot
+Documentation=https://github.com/YOUR_USERNAME/trump_trade
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=trumptrade
+Group=trumptrade
+WorkingDirectory=/home/trumptrade/trump_trade
+EnvironmentFile=/home/trumptrade/trump_trade/.env
+ExecStart=/home/trumptrade/trump_trade/.venv/bin/trumptrade
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=trumptrade
+NoNewPrivileges=yes
+PrivateTmp=yes
+
+[Install]
+WantedBy=multi-user.target
