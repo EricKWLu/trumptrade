@@ -4,6 +4,7 @@ import FeedPage from "./pages/FeedPage"
 import TradesPage from "./pages/TradesPage"
 import PortfolioPage from "./pages/PortfolioPage"
 import SettingsPage from "./pages/SettingsPage"
+import BenchmarksPage from "./pages/BenchmarksPage"
 
 export const router = createBrowserRouter([
   {
@@ -13,6 +14,7 @@ export const router = createBrowserRouter([
       { index: true, element: <FeedPage /> },           // CRITICAL: index:true, NOT path:"/"
       { path: "trades", element: <TradesPage /> },
       { path: "portfolio", element: <PortfolioPage /> },
+      { path: "benchmarks", element: <BenchmarksPage /> },
       { path: "settings", element: <SettingsPage /> },
     ],
   },

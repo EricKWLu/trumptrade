@@ -100,6 +100,19 @@ export interface AlertItem {
   ts: string
 }
 
+export interface BenchmarkPoint {
+  date: string          // "YYYY-MM-DD"
+  bot: number | null    // % return from start, null if not yet started
+  spy: number | null
+  qqq: number | null
+  random: number | null
+}
+
+export interface SetModeResponse {
+  trading_mode: string
+  ok: boolean
+}
+
 export interface PostFeedMessage {
   type: "post"
   id: number
@@ -162,5 +175,15 @@ export const api = {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ enabled }),
+    }),
+
+  benchmarks: () =>
+    apiFetch<{ snapshots: BenchmarkPoint[] }>("/benchmarks").then((r) => r.snapshots),
+
+  setMode: (mode: "paper" | "live") =>
+    apiFetch<SetModeResponse>("/trading/set-mode", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ mode, confirmed: true }),
     }),
 }
