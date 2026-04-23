@@ -117,6 +117,14 @@ def create_app() -> FastAPI:
     from trumptrade.analysis import register_analysis_jobs  # local import avoids circular import
     register_analysis_jobs(scheduler)
 
+    # ── Phase 7: benchmark snapshot jobs ────────────────────────────────────
+    from trumptrade.benchmarks import register_benchmark_jobs  # local import
+    register_benchmark_jobs(scheduler)
+
+    # ── Phase 7: benchmarks router ───────────────────────────────────────────
+    from trumptrade.benchmarks.router import router as benchmarks_router  # local import
+    app.include_router(benchmarks_router, tags=["benchmarks"])
+
     @app.get("/health")
     async def health() -> dict:
         """Health check — confirms server is up and scheduler is running."""

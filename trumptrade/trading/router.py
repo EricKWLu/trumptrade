@@ -33,6 +33,16 @@ class KillSwitchResponse(BaseModel):
     ok: bool
 
 
+class SetModeRequest(BaseModel):
+    mode: str        # "paper" | "live"
+    confirmed: bool  # must be True — extra safety gate (D-09/D-12)
+
+
+class SetModeResponse(BaseModel):
+    trading_mode: str
+    ok: bool
+
+
 @router.post("/execute", response_model=ExecuteSignalResponse)
 async def execute_signal(body: ExecuteSignalRequest) -> ExecuteSignalResponse:
     """Place a bracket order on Alpaca. Returns order_id on success.
@@ -76,3 +86,32 @@ async def trading_status() -> dict:
         )
         val = result.scalar_one_or_none()
     return {"bot_enabled": val == "true"}
+
+
+@router.post("/set-mode", response_model=SetModeResponse)
+async def set_trading_mode(body: SetModeRequest) -> SetModeResponse:
+    """Write trading_mode to app_settings (D-12, TRADE-02).
+
+    Requires mode in {"paper", "live"} and confirmed=True.
+    Changes take effect immediately — executor reads trading_mode per-request.
+    Returns 422 if mode is invalid or confirmed is False.
+    """
+    if body.mode not in ("paper", "live"):
+        raise HTTPException(status_code=422, detail="mode must be 'paper' or 'live'")
+    if not body.confirmed:
+        raise HTTPException(status_code=422, detail="confirmed must be true")
+
+    from sqlalchemy import update
+    from trumptrade.core.db import AsyncSessionLocal
+    from trumptrade.core.models import AppSettings
+
+    async with AsyncSessionLocal() as session:
+        await session.execute(
+            update(AppSettings)
+            .where(AppSettings.key == "trading_mode")
+            .values(value=body.mode)
+        )
+        await session.commit()
+
+    logger.info("Trading mode changed to %s", body.mode)
+    return SetModeResponse(trading_mode=body.mode, ok=True)
