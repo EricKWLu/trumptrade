@@ -32,7 +32,7 @@ export function LiveModeModal({ isLive, open, onClose }: LiveModeModalProps) {
   const modeMutation = useMutation({
     mutationFn: () => api.setMode(targetMode),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["portfolio-mode"] })
+      queryClient.invalidateQueries({ queryKey: ["trading-mode"] })
       setInput("")
       setError(null)
       onClose()

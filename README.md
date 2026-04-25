@@ -270,13 +270,13 @@ ALPACA_SECRET_KEY=...
 TRUTH_SOCIAL_USERNAME=...
 TRUTH_SOCIAL_PASSWORD=...
 ANTHROPIC_API_KEY=...
-DB_URL=sqlite+aiosqlite:////home/trumptrade/trump_trade/trumptrade.db
+DB_URL=sqlite+aiosqlite:////home/trumptrade/trumptrade/trumptrade.db
 DEBUG=false
 EOF
 chmod 600 .env
 
 # Alternatively, copy from your local machine:
-# scp .env trumptrade@YOUR_IP:/home/trumptrade/trump_trade/.env
+# scp .env trumptrade@YOUR_IP:/home/trumptrade/trumptrade/.env
 
 # Run migrations
 alembic upgrade head
@@ -289,7 +289,7 @@ cd frontend && npm install && npm run build && cd ..
 
 ```bash
 # systemd service
-sudo cp /home/trumptrade/trump_trade/deploy/trumptrade.service /etc/systemd/system/
+sudo cp /home/trumptrade/trumptrade/deploy/trumptrade.service /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable trumptrade
 sudo systemctl start trumptrade
@@ -300,14 +300,14 @@ echo "trumptrade ALL=(ALL) NOPASSWD: /bin/systemctl restart trumptrade, /bin/sys
 sudo chmod 440 /etc/sudoers.d/trumptrade-service
 
 # Nginx
-sudo cp /home/trumptrade/trump_trade/deploy/nginx.conf /etc/nginx/sites-available/trumptrade
+sudo cp /home/trumptrade/trumptrade/deploy/nginx.conf /etc/nginx/sites-available/trumptrade
 sudo ln -sf /etc/nginx/sites-available/trumptrade /etc/nginx/sites-enabled/trumptrade
 sudo rm -f /etc/nginx/sites-enabled/default
 sudo nginx -t && sudo systemctl reload nginx
 
 # Fix permissions so Nginx (www-data) can read the React dist/
 sudo chmod o+x /home/trumptrade
-sudo chmod -R o+r /home/trumptrade/trump_trade/frontend/dist
+sudo chmod -R o+r /home/trumptrade/trumptrade/frontend/dist
 ```
 
 **6. Verify**

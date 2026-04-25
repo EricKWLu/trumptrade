@@ -226,12 +226,12 @@ function RiskControlsSection() {
 
 function TradingModeSection() {
   const [modalOpen, setModalOpen] = useState(false)
-  const { data: portfolioData } = useQuery({
-    queryKey: ["portfolio-mode"],
-    queryFn: () => api.portfolio(),
-    staleTime: 30_000,
+  const { data: modeData } = useQuery({
+    queryKey: ["trading-mode"],
+    queryFn: () => api.tradingMode(),
+    staleTime: 0,
   })
-  const mode = portfolioData?.trading_mode ?? "paper"
+  const mode = modeData?.trading_mode ?? "paper"
 
   return (
     <Card>

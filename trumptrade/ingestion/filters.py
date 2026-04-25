@@ -7,7 +7,7 @@ FINANCIAL_KEYWORDS: frozenset[str] = frozenset({
     "deal", "sanction", "china", "invest", "dollar", "rate", "inflation",
     "bank", "energy", "oil", "gas", "crypto", "bitcoin", "fed", "reserve",
     "deficit", "debt", "budget", "jobs", "employment", "manufacturing",
-    "import", "export",
+    "import", "export", "strait", "war"
 })
 
 

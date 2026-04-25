@@ -66,7 +66,7 @@ async def get_posts(
     stmt = (
         select(Post, Signal)
         .outerjoin(Signal, Signal.post_id == Post.id)
-        .order_by(Post.created_at.desc())
+        .order_by(Post.posted_at.desc())
         .limit(limit)
         .offset(offset)
     )

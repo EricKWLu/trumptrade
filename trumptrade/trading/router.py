@@ -88,6 +88,21 @@ async def trading_status() -> dict:
     return {"bot_enabled": val == "true"}
 
 
+@router.get("/mode")
+async def get_trading_mode() -> dict:
+    """Return current trading_mode from app_settings (no Alpaca call)."""
+    from sqlalchemy import select
+    from trumptrade.core.db import AsyncSessionLocal
+    from trumptrade.core.models import AppSettings
+
+    async with AsyncSessionLocal() as session:
+        result = await session.execute(
+            select(AppSettings.value).where(AppSettings.key == "trading_mode")
+        )
+        val = result.scalar_one_or_none()
+    return {"trading_mode": val or "paper"}
+
+
 @router.post("/set-mode", response_model=SetModeResponse)
 async def set_trading_mode(body: SetModeRequest) -> SetModeResponse:
     """Write trading_mode to app_settings (D-12, TRADE-02).

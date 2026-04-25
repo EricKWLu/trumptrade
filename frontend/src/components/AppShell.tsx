@@ -18,10 +18,10 @@ const NAV_ITEMS = [
 
 function TradingModeBadge() {
   const { data } = useQuery({
-    queryKey: ["portfolio-mode"],
-    queryFn: () => api.portfolio(),
-    staleTime: 30_000,
-    refetchInterval: 60_000,
+    queryKey: ["trading-mode"],
+    queryFn: () => api.tradingMode(),
+    staleTime: 0,
+    refetchInterval: 30_000,
   })
   const mode = data?.trading_mode ?? "paper"
   if (mode === "live") {
@@ -44,10 +44,10 @@ function TradingModeBadge() {
 
 export default function AppShell() {
   const { data: modeData } = useQuery({
-    queryKey: ["portfolio-mode"],
-    queryFn: () => api.portfolio(),
-    staleTime: 30_000,
-    refetchInterval: 60_000,
+    queryKey: ["trading-mode"],
+    queryFn: () => api.tradingMode(),
+    staleTime: 0,
+    refetchInterval: 30_000,
   })
   const mode = modeData?.trading_mode ?? "paper"
 

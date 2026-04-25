@@ -103,7 +103,7 @@ export default function PostCard({ post }: { post: PostCardData }) {
             ))}
           </div>
         ) : (
-          <span className="text-xs text-muted-foreground italic">Analyzing…</span>
+          <span className="text-xs text-muted-foreground italic">Analysing…</span>
         )}
       </CardContent>
     </Card>

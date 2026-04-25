@@ -180,6 +180,9 @@ export const api = {
   benchmarks: () =>
     apiFetch<{ snapshots: BenchmarkPoint[] }>("/benchmarks").then((r) => r.snapshots),
 
+  tradingMode: () =>
+    apiFetch<{ trading_mode: string }>("/trading/mode"),
+
   setMode: (mode: "paper" | "live") =>
     apiFetch<SetModeResponse>("/trading/set-mode", {
       method: "POST",

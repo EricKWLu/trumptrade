@@ -684,17 +684,13 @@ const { data, isLoading, isError } = useQuery({
 
 ---
 
-## Open Questions
+## Open Questions (RESOLVED)
 
 1. **Alert storage mechanism for GET /alerts**
-   - What we know: CONTEXT.md D-10 specifies scraper silence (heartbeat), Alpaca API errors (from risk consumer), and LLM failures as alert sources. No `alerts` table exists in `models.py`.
-   - What's unclear: Should alerts be persisted (DB table) or in-memory (module-level list)? Persisted alerts survive restarts but add migration complexity. In-memory is simpler but lost on restart.
-   - Recommendation: In-memory `List[dict]` in `dashboard/router.py` is sufficient for this personal tool. Add a `GET /alerts` endpoint that returns the list. Error sources (risk guard, ingestion heartbeat) write to it via an `append_alert()` function. Polled every 10s by frontend.
+   - **Resolution (Plan 06-01/02):** In-memory `_alerts: list[dict]` in `dashboard/router.py`. `append_alert()` is called via local import by `heartbeat.py` (scraper silence) and `risk_guard/guard.py` (Alpaca APIError). `GET /alerts` returns the list. Polled every 10s by frontend.
 
 2. **WebSocket message format — should it include signal data?**
-   - What we know: Post rows are inserted by ingestion workers; Signal rows are inserted by analysis worker (separate APScheduler job, runs 30s after posts). A post arrives before its signal is ready.
-   - What's unclear: Should the WS push include signal data (sentiment, confidence) or just post data?
-   - Recommendation: Push post data immediately on insertion. Frontend shows post card with "Analyzing..." placeholder. A second push (or TanStack Query invalidation) delivers signal data when ready. Simpler: just push post data and let the feed reload signals via polling.
+   - **Resolution (Plan 06-01):** Broadcast in `analysis/worker.py` after Signal commit, including full signal data (sentiment, confidence, affected_tickers, final_action, reason_code). Format: `{"type": "post", "id": ..., "signal": {...}}`. Frontend PostCard renders signal data immediately from WS message — no "Analyzing..." placeholder needed.
 
 ---
 

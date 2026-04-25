@@ -6,7 +6,7 @@
 
 set -euo pipefail
 
-REPO_DIR="/home/trumptrade/trump_trade"
+REPO_DIR="/home/trumptrade/trumptrade"
 VENV="$REPO_DIR/.venv"
 
 echo "[1/5] Pulling latest code..."

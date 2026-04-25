@@ -22,9 +22,9 @@ class Settings(BaseSettings):
     openai_api_key: str = ""
     anthropic_api_key: str = ""
     groq_api_key: str = ""  # Optional — required only when llm_provider = "groq" (D-03)
-    truth_social_account_id: str = "107780257626128497"
-    truth_social_token: str = ""       # Optional — if set, skips auto-login
-    truth_social_username: str = ""    # Auto-login credentials (preferred over token)
+    truth_social_account_username: str = "realDonaldTrump"  # truthbrush uses username, not numeric ID
+    truth_social_token: str = ""       # Optional — if set, truthbrush skips password auth
+    truth_social_username: str = ""    # truthbrush credentials
     truth_social_password: str = ""
 
     # Non-secret app config
