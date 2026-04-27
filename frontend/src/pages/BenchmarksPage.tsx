@@ -42,8 +42,8 @@ function BenchmarkChart({ data }: { data: BenchmarkPoint[] }) {
         />
         <ReferenceLine y={0} stroke="hsl(var(--muted-foreground))" strokeDasharray="4 4" />
         <Tooltip
-          formatter={(value: number, name: string) => [`${value.toFixed(2)}%`, name.toUpperCase()]}
-          labelFormatter={(label: string) => `Date: ${label}`}
+          formatter={(value, name) => [`${Number(value).toFixed(2)}%`, String(name).toUpperCase()]}
+          labelFormatter={(label) => `Date: ${label}`}
           contentStyle={{
             background: "hsl(var(--card))",
             border: "1px solid hsl(var(--border))",
