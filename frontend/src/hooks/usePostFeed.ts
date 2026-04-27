@@ -13,7 +13,14 @@ export function usePostFeed() {
   const connect = useCallback(() => {
     if (unmountedRef.current) return
 
-    const ws = new WebSocket("ws://localhost:8000/ws/feed")
+    const wsProto = window.location.protocol === "https:" ? "wss:" : "ws:"
+    const wsHost = window.location.host || "localhost:8000"
+    // Dev mode (Vite on :5173) needs to point to backend directly; prod uses same-origin via Nginx
+    const isDevHost = wsHost.includes(":5173")
+    const wsUrl = isDevHost
+      ? "ws://localhost:8000/ws/feed"
+      : `${wsProto}//${wsHost}/ws/feed`
+    const ws = new WebSocket(wsUrl)
     wsRef.current = ws
 
     ws.onopen = () => {
