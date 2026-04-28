@@ -9,7 +9,7 @@ from alpaca.data.historical import StockHistoricalDataClient
 from alpaca.data.requests import StockLatestTradeRequest
 from alpaca.trading.client import TradingClient
 from alpaca.trading.enums import OrderClass, OrderSide, TimeInForce
-from alpaca.trading.requests import MarketOrderRequest, StopLossRequest
+from alpaca.trading.requests import MarketOrderRequest, StopLossRequest, TakeProfitRequest
 from fastapi import HTTPException
 from sqlalchemy import select, update
 
@@ -67,18 +67,29 @@ class AlpacaExecutor:
             raise HTTPException(status_code=502, detail=f"Alpaca data error: {exc.message}")
         last_price: float = trade_map[symbol].price
 
-        # STEP 5: Calculate stop price (D-02)
-        stop_price = round(last_price * (1 - stop_loss_pct / 100), 2)  # round to 2dp — Alpaca precision
+        # STEP 5: Calculate stop and take-profit prices (D-02)
+        # Alpaca bracket orders require BOTH stop_loss and take_profit.
+        # take_profit_pct defaults to 2x stop_loss_pct for a 1:2 risk-reward ratio.
+        take_profit_pct = stop_loss_pct * 2
+        is_buy = side.lower() == "buy"
+        if is_buy:
+            stop_price = round(last_price * (1 - stop_loss_pct / 100), 2)
+            take_profit_price = round(last_price * (1 + take_profit_pct / 100), 2)
+        else:
+            # short: stop above, take_profit below
+            stop_price = round(last_price * (1 + stop_loss_pct / 100), 2)
+            take_profit_price = round(last_price * (1 - take_profit_pct / 100), 2)
 
         # STEP 6: Build bracket order (D-03 + TRADE-03 — stop_loss MUST be atomic, never separate)
-        order_side = OrderSide.BUY if side.lower() == "buy" else OrderSide.SELL
+        order_side = OrderSide.BUY if is_buy else OrderSide.SELL
         order_request = MarketOrderRequest(
             symbol=symbol,
             qty=qty,
             side=order_side,
             time_in_force=TimeInForce.DAY,       # DAY safer than GTC in paper mode
             order_class=OrderClass.BRACKET,       # MANDATORY — makes stop_loss atomic
-            stop_loss=StopLossRequest(stop_price=stop_price),  # no take_profit in Phase 2
+            stop_loss=StopLossRequest(stop_price=stop_price),
+            take_profit=TakeProfitRequest(limit_price=take_profit_price),
         )
 
         # STEP 7: Submit order — sync call MUST use run_in_executor
