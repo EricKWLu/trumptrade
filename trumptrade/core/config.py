@@ -22,10 +22,11 @@ class Settings(BaseSettings):
     openai_api_key: str = ""
     anthropic_api_key: str = ""
     groq_api_key: str = ""  # Optional — required only when llm_provider = "groq" (D-03)
-    truth_social_account_username: str = "realDonaldTrump"  # truthbrush uses username, not numeric ID
-    truth_social_token: str = ""       # Optional — if set, truthbrush skips password auth
-    truth_social_username: str = ""    # truthbrush credentials
-    truth_social_password: str = ""
+    truth_social_account_id: str = "107780257626128497"  # realDonaldTrump's Mastodon account ID
+    truth_social_account_username: str = "realDonaldTrump"  # informational
+    truth_social_token: str = ""       # Optional — unused by httpx poller (kept for backwards compat)
+    truth_social_username: str = ""    # Optional — unused by httpx poller
+    truth_social_password: str = ""    # Optional — unused by httpx poller
 
     # Non-secret app config
     debug: bool = False

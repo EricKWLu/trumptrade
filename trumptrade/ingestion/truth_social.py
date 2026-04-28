@@ -1,14 +1,19 @@
 from __future__ import annotations
 
-"""Truth Social poller — fetches Trump posts via truthbrush (INGEST-01, INGEST-03)."""
+"""Truth Social poller — fetches Trump posts via Truth Social's public Mastodon-compatible API.
 
-import asyncio
+No authentication required — the /api/v1/accounts/{id}/statuses endpoint is publicly readable
+for accounts with `unauth_visibility: true` (which Trump's account has).
+
+A Chrome-like User-Agent header is required to bypass Cloudflare's basic bot filtering.
+"""
+
 import hashlib
 import logging
 import re
 from datetime import datetime, timezone
-from functools import partial
 
+import httpx
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 
@@ -18,6 +23,13 @@ from trumptrade.core.models import AppSettings, Post
 from trumptrade.ingestion.filters import apply_filters
 
 logger = logging.getLogger(__name__)
+
+_BASE_URL = "https://truthsocial.com/api/v1/accounts/{account_id}/statuses"
+_USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
+    "AppleWebKit/537.36 (KHTML, like Gecko) "
+    "Chrome/131.0.0.0 Safari/537.36"
+)
 
 
 def _strip_html(html: str) -> str:
@@ -46,52 +58,38 @@ async def _set_setting(key: str, value: str) -> None:
         await session.commit()
 
 
-def _pull_statuses_sync(
-    username: str | None,
-    password: str | None,
-    token: str | None,
-    account_username: str,
-    since_id: str | None,
-) -> list[dict]:
-    """Sync wrapper around truthbrush — runs in a thread via run_in_executor."""
-    try:
-        from truthbrush import Api  # type: ignore[import]
-    except ImportError:
-        logger.error("truthbrush not installed — run: pip install truthbrush")
-        return []
+async def _fetch_statuses(account_id: str, since_id: str | None, limit: int = 20) -> list[dict]:
+    """GET /api/v1/accounts/{account_id}/statuses unauthenticated.
 
-    try:
-        api = Api(username=username, password=password, token=token)
-        statuses = list(api.pull_statuses(username=account_username, since_id=since_id))
-        return statuses
-    except Exception as exc:
-        logger.error("truthbrush pull_statuses failed: %s", exc)
-        return []
-
-
-def _get_latest_post_id_sync(
-    username: str | None,
-    password: str | None,
-    token: str | None,
-    account_username: str,
-) -> str | None:
-    """Fetch only the most recent post ID — used to bootstrap the cursor on first run.
-
-    Consumes just the first item from the generator (one API page) rather than
-    paginating through all history, avoiding bulk-fetch rate limiting.
+    Cloudflare blocks default user-agents — sending a Chrome UA bypasses this.
+    Returns [] on any error (logged); cursor advance is skipped on empty results.
     """
-    try:
-        from truthbrush import Api  # type: ignore[import]
-    except ImportError:
-        return None
+    url = _BASE_URL.format(account_id=account_id)
+    params: dict[str, object] = {"limit": limit}
+    if since_id:
+        params["since_id"] = since_id
+
+    headers = {
+        "User-Agent": _USER_AGENT,
+        "Accept": "application/json",
+    }
 
     try:
-        api = Api(username=username, password=password, token=token)
-        first = next(iter(api.pull_statuses(username=account_username)), None)
-        return first["id"] if first else None
+        async with httpx.AsyncClient(timeout=10.0) as client:
+            resp = await client.get(url, params=params, headers=headers)
+        if resp.status_code != 200:
+            logger.error(
+                "Truth Social fetch failed: status=%d body=%s",
+                resp.status_code, resp.text[:200],
+            )
+            return []
+        return resp.json()
+    except httpx.RequestError as exc:
+        logger.error("Truth Social network error: %s", exc)
+        return []
     except Exception as exc:
-        logger.error("truthbrush bootstrap failed: %s", exc)
-        return None
+        logger.error("Truth Social fetch unexpected error: %s", exc)
+        return []
 
 
 async def poll_truth_social() -> None:
@@ -103,41 +101,27 @@ async def poll_truth_social() -> None:
     - SHA-256 content_hash dedup via SAVEPOINT (D-06)
     - Pre-filter via apply_filters() (INGEST-04 — sets is_filtered/filter_reason)
     - Cursor advance to max platform_post_id after successful poll (D-12)
+    - Bootstrap on first run: set cursor to latest post ID without ingesting history
     """
     settings = get_settings()
-    account_username = settings.truth_social_account_username
-    ts_username = settings.truth_social_username
-    ts_password = settings.truth_social_password
-    ts_token = settings.truth_social_token or None
+    account_id = settings.truth_social_account_id
 
     since_id = await _get_setting("last_truth_post_id")
 
-    # Bootstrap: on first run set cursor to latest post ID and skip history entirely
+    # Bootstrap: on first run set cursor to latest post and skip history
     if since_id is None:
-        loop = asyncio.get_event_loop()
-        latest_id = await loop.run_in_executor(
-            None,
-            partial(_get_latest_post_id_sync, ts_username, ts_password, ts_token, account_username),
-        )
-        if latest_id:
+        latest = await _fetch_statuses(account_id, since_id=None, limit=1)
+        if latest:
+            latest_id = latest[0]["id"]
             await _set_setting("last_truth_post_id", latest_id)
-            logger.info("Truth Social: bootstrapped cursor to %s — skipping historical posts", latest_id)
+            logger.info(
+                "Truth Social: bootstrapped cursor to %s — skipping historical posts",
+                latest_id,
+            )
         return
 
     staleness_minutes = int(await _get_setting("signal_staleness_minutes") or "5")
-
-    loop = asyncio.get_event_loop()
-    statuses = await loop.run_in_executor(
-        None,
-        partial(
-            _pull_statuses_sync,
-            ts_username,
-            ts_password,
-            ts_token,
-            account_username,
-            since_id,
-        ),
-    )
+    statuses = await _fetch_statuses(account_id, since_id=since_id, limit=20)
 
     if not statuses:
         return
@@ -162,13 +146,17 @@ async def poll_truth_social() -> None:
                 continue
 
             if not is_filtered:
-                age_seconds = (datetime.now(timezone.utc).replace(tzinfo=None) - posted_at).total_seconds()
+                age_seconds = (
+                    datetime.now(timezone.utc).replace(tzinfo=None) - posted_at
+                ).total_seconds()
                 if age_seconds > staleness_minutes * 60:
                     is_filtered = True
                     filter_reason = "stale_on_ingest"
 
             account = status.get("account") or {}
-            author: str | None = account.get("username") if isinstance(account, dict) else None
+            author: str | None = (
+                account.get("username") if isinstance(account, dict) else None
+            )
             platform_post_id: str = status["id"]
 
             post = Post(
