@@ -13,7 +13,7 @@ import logging
 import re
 from datetime import datetime, timezone
 
-import httpx
+from curl_cffi.requests import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 
@@ -61,7 +61,8 @@ async def _set_setting(key: str, value: str) -> None:
 async def _fetch_statuses(account_id: str, since_id: str | None, limit: int = 20) -> list[dict]:
     """GET /api/v1/accounts/{account_id}/statuses unauthenticated.
 
-    Cloudflare blocks default user-agents — sending a Chrome UA bypasses this.
+    Cloudflare checks both User-Agent AND TLS fingerprint. curl_cffi's
+    impersonate="chrome" mimics Chrome's TLS handshake to pass these checks.
     Returns [] on any error (logged); cursor advance is skipped on empty results.
     """
     url = _BASE_URL.format(account_id=account_id)
@@ -75,8 +76,8 @@ async def _fetch_statuses(account_id: str, since_id: str | None, limit: int = 20
     }
 
     try:
-        async with httpx.AsyncClient(timeout=10.0) as client:
-            resp = await client.get(url, params=params, headers=headers)
+        async with AsyncSession(impersonate="chrome") as session:
+            resp = await session.get(url, params=params, headers=headers, timeout=10.0)
         if resp.status_code != 200:
             logger.error(
                 "Truth Social fetch failed: status=%d body=%s",
@@ -84,11 +85,8 @@ async def _fetch_statuses(account_id: str, since_id: str | None, limit: int = 20
             )
             return []
         return resp.json()
-    except httpx.RequestError as exc:
-        logger.error("Truth Social network error: %s", exc)
-        return []
     except Exception as exc:
-        logger.error("Truth Social fetch unexpected error: %s", exc)
+        logger.error("Truth Social fetch error: %s", exc)
         return []
 
 
