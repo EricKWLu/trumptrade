@@ -79,8 +79,8 @@ async def get_posts(
             "id": post.id,
             "platform": post.platform,
             "content": post.content,
-            "posted_at": post.posted_at.isoformat(),
-            "created_at": post.created_at.isoformat(),
+            "posted_at": post.posted_at.isoformat() + "Z",
+            "created_at": post.created_at.isoformat() + "Z",
             "is_filtered": post.is_filtered,
             "filter_reason": post.filter_reason,
             "signal": {
@@ -148,7 +148,7 @@ async def get_trades() -> list[dict]:
                 "id": post.id,
                 "platform": post.platform,
                 "content": post.content,
-                "posted_at": post.posted_at.isoformat(),
+                "posted_at": post.posted_at.isoformat() + "Z",
                 "is_filtered": post.is_filtered,
             }
         if fill:

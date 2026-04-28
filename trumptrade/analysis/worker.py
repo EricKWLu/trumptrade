@@ -286,7 +286,7 @@ async def analysis_worker() -> None:
             "id": post.id,
             "platform": post.platform,
             "content": post.content,
-            "posted_at": post.posted_at.isoformat(),
+            "posted_at": post.posted_at.isoformat() + "Z",
             "is_filtered": post.is_filtered,
             "filter_reason": post.filter_reason,
             "signal": {
