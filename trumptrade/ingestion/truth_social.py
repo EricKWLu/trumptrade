@@ -132,7 +132,14 @@ async def poll_truth_social() -> None:
         for status in statuses:
             raw_html: str = status.get("content", "")
             text = _strip_html(raw_html)
-            content_hash = hashlib.sha256(text.encode()).hexdigest()
+            platform_post_id_for_hash: str = status.get("id", "")
+            # Empty-content posts (image/video only) all hash to the same SHA — fall back to
+            # hashing the post ID so each one is unique. Trade-off: loses cross-platform
+            # dedup for image posts, but gains visibility into Trump's image-only signals.
+            if text:
+                content_hash = hashlib.sha256(text.encode()).hexdigest()
+            else:
+                content_hash = hashlib.sha256(f"truth_social:{platform_post_id_for_hash}".encode()).hexdigest()
             is_filtered, filter_reason = apply_filters(text)
 
             created_at_str: str = status.get("created_at", "")
