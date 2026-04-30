@@ -18,12 +18,9 @@ def apply_filters(text: str) -> tuple[bool, str | None]:
     Checks are applied in order; first match wins.
 
     Per D-07:
-      1. len(text) < 100 → too_short
-      2. starts with "RT @" (case-insensitive) → pure_repost
-      3. no financial keyword in text → no_financial_keywords
+      1. starts with "RT @" (case-insensitive) → pure_repost
+      2. no financial keyword in text → no_financial_keywords
     """
-    if len(text) < 100:
-        return True, "too_short"
     if text.upper().startswith("RT @"):
         return True, "pure_repost"
     words = set(text.lower().split())
