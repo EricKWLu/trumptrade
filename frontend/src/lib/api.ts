@@ -93,6 +93,7 @@ export interface RiskSettings {
   max_daily_loss_dollars: number
   signal_staleness_minutes: number
   after_hours_hold_threshold: number
+  confidence_threshold: number
 }
 
 export interface AlertItem {

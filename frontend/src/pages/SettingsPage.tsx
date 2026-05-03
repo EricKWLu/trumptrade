@@ -135,6 +135,7 @@ function RiskControlsSection() {
     max_daily_loss_dollars: 500,
     signal_staleness_minutes: 5,
     after_hours_hold_threshold: 0.85,
+    confidence_threshold: 0.7,
   })
 
   const { data: riskSettings } = useQuery({
@@ -177,6 +178,7 @@ function RiskControlsSection() {
     { key: "max_daily_loss_dollars", label: "Max Daily Loss", placeholder: "500", hint: "dollars" },
     { key: "signal_staleness_minutes", label: "Signal Staleness", placeholder: "5", hint: "minutes" },
     { key: "after_hours_hold_threshold", label: "After-Hours Hold", placeholder: "0.85", hint: "min confidence (0–1) to hold for next open" },
+    { key: "confidence_threshold", label: "Confidence Gate", placeholder: "0.7", hint: "min confidence (0–1) to act on a signal" },
   ]
 
   return (
