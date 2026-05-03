@@ -27,11 +27,12 @@ router = APIRouter()
 # ── Pydantic models ───────────────────────────────────────────────────────────
 
 class RiskSettingsResponse(BaseModel):
-    """All 4 risk settings — returned by GET and PATCH."""
+    """All 5 risk settings — returned by GET and PATCH."""
     max_position_size_pct: float
     stop_loss_pct: float
     max_daily_loss_dollars: float
     signal_staleness_minutes: int
+    after_hours_hold_threshold: float
 
 
 class RiskSettingsPatch(BaseModel):
@@ -40,6 +41,7 @@ class RiskSettingsPatch(BaseModel):
     stop_loss_pct: Optional[float] = Field(default=None, gt=0, le=100)
     max_daily_loss_dollars: Optional[float] = Field(default=None, gt=0)
     signal_staleness_minutes: Optional[int] = Field(default=None, gt=0)
+    after_hours_hold_threshold: Optional[float] = Field(default=None, ge=0, le=1)
 
 
 # ── DB helpers ────────────────────────────────────────────────────────────────
@@ -55,16 +57,18 @@ async def _read_setting(key: str, default: str) -> str:
 
 
 async def _read_all_risk_settings() -> RiskSettingsResponse:
-    """Read all 4 risk settings and return as RiskSettingsResponse."""
+    """Read all 5 risk settings and return as RiskSettingsResponse."""
     max_pos = await _read_setting("max_position_size_pct", "2.0")
     stop_loss = await _read_setting("stop_loss_pct", "5.0")
     max_daily = await _read_setting("max_daily_loss_dollars", "500.0")
     staleness = await _read_setting("signal_staleness_minutes", "5")
+    after_hours = await _read_setting("after_hours_hold_threshold", "0.85")
     return RiskSettingsResponse(
         max_position_size_pct=float(max_pos),
         stop_loss_pct=float(stop_loss),
         max_daily_loss_dollars=float(max_daily),
         signal_staleness_minutes=int(staleness),
+        after_hours_hold_threshold=float(after_hours),
     )
 
 
@@ -95,11 +99,19 @@ async def patch_risk_settings(body: RiskSettingsPatch) -> RiskSettingsResponse:
     try:
         async with AsyncSessionLocal() as session:
             for key, value in updates.items():
-                await session.execute(
-                    update(AppSettings)
-                    .where(AppSettings.key == key)
-                    .values(value=str(value))
+                # Upsert: update if exists, insert if not (handles new keys with no seed)
+                existing = await session.execute(
+                    select(AppSettings).where(AppSettings.key == key)
                 )
+                row = existing.scalar_one_or_none()
+                if row is not None:
+                    await session.execute(
+                        update(AppSettings)
+                        .where(AppSettings.key == key)
+                        .values(value=str(value))
+                    )
+                else:
+                    session.add(AppSettings(key=key, value=str(value)))
             await session.commit()
         logger.info("patch_risk_settings: updated %s", list(updates.keys()))
     except Exception as exc:

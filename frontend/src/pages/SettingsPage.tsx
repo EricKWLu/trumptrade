@@ -134,6 +134,7 @@ function RiskControlsSection() {
     stop_loss_pct: 5.0,
     max_daily_loss_dollars: 500,
     signal_staleness_minutes: 5,
+    after_hours_hold_threshold: 0.85,
   })
 
   const { data: riskSettings } = useQuery({
@@ -175,6 +176,7 @@ function RiskControlsSection() {
     { key: "stop_loss_pct", label: "Stop-Loss", placeholder: "5.0", hint: "% from fill price" },
     { key: "max_daily_loss_dollars", label: "Max Daily Loss", placeholder: "500", hint: "dollars" },
     { key: "signal_staleness_minutes", label: "Signal Staleness", placeholder: "5", hint: "minutes" },
+    { key: "after_hours_hold_threshold", label: "After-Hours Hold", placeholder: "0.85", hint: "min confidence (0–1) to hold for next open" },
   ]
 
   return (

@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
 # ── Module-level constants ────────────────────────────────────────────────────
 
 _EASTERN = pytz.timezone("America/New_York")
-_AFTER_HOURS_HOLD_THRESHOLD: float = 0.85   # D-17: hardcoded, not configurable
+_AFTER_HOURS_HOLD_THRESHOLD_DEFAULT: float = 0.85   # default if app_settings row missing
 _HOLD_EXPIRY_HOURS: int = 24
 _hold_list: list[tuple[datetime, "QueueItem"]] = []   # (enqueued_at_utc, item)
 
@@ -297,18 +297,21 @@ async def _process_signal(
         return
 
     if not clock.is_open:
-        # After-hours: gate on confidence (D-16, D-17)
-        if item.confidence >= _AFTER_HOURS_HOLD_THRESHOLD:
+        # After-hours: gate on confidence (D-16, D-17). Threshold is user-configurable.
+        threshold = float(await _get_setting(
+            "after_hours_hold_threshold", str(_AFTER_HOURS_HOLD_THRESHOLD_DEFAULT)
+        ))
+        if item.confidence >= threshold:
             enqueued_at = datetime.now(timezone.utc)
             _hold_list.append((enqueued_at, item))
             logger.info(
-                "risk_consumer: after-hours hold (confidence=%.2f >= 0.85) signal_id=%d",
-                item.confidence, item.signal_id,
+                "risk_consumer: after-hours hold (confidence=%.2f >= %.2f) signal_id=%d",
+                item.confidence, threshold, item.signal_id,
             )
         else:
             logger.info(
-                "risk_consumer: MARKET_CLOSED discard (confidence=%.2f < 0.85) signal_id=%d",
-                item.confidence, item.signal_id,
+                "risk_consumer: MARKET_CLOSED discard (confidence=%.2f < %.2f) signal_id=%d",
+                item.confidence, threshold, item.signal_id,
             )
             await _update_signal_reason(item.signal_id, "MARKET_CLOSED")
         return
