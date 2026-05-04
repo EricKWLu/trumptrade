@@ -27,9 +27,10 @@ router = APIRouter()
 # ── Pydantic models ───────────────────────────────────────────────────────────
 
 class RiskSettingsResponse(BaseModel):
-    """All 6 risk settings — returned by GET and PATCH."""
+    """All 7 risk settings — returned by GET and PATCH."""
     max_position_size_pct: float
     stop_loss_pct: float
+    take_profit_pct: float
     max_daily_loss_dollars: float
     signal_staleness_minutes: int
     after_hours_hold_threshold: float
@@ -40,6 +41,7 @@ class RiskSettingsPatch(BaseModel):
     """Partial update — only non-None fields are written to app_settings (PATCH semantics)."""
     max_position_size_pct: Optional[float] = Field(default=None, gt=0, le=100)
     stop_loss_pct: Optional[float] = Field(default=None, gt=0, le=100)
+    take_profit_pct: Optional[float] = Field(default=None, gt=0, le=100)
     max_daily_loss_dollars: Optional[float] = Field(default=None, gt=0)
     signal_staleness_minutes: Optional[int] = Field(default=None, gt=0)
     after_hours_hold_threshold: Optional[float] = Field(default=None, ge=0, le=1)
@@ -59,9 +61,11 @@ async def _read_setting(key: str, default: str) -> str:
 
 
 async def _read_all_risk_settings() -> RiskSettingsResponse:
-    """Read all 6 risk settings and return as RiskSettingsResponse."""
+    """Read all 7 risk settings and return as RiskSettingsResponse."""
     max_pos = await _read_setting("max_position_size_pct", "2.0")
     stop_loss = await _read_setting("stop_loss_pct", "5.0")
+    # Default take_profit_pct to 2x stop_loss_pct (preserves prior 1:2 risk-reward)
+    take_profit = await _read_setting("take_profit_pct", str(float(stop_loss) * 2))
     max_daily = await _read_setting("max_daily_loss_dollars", "500.0")
     staleness = await _read_setting("signal_staleness_minutes", "5")
     after_hours = await _read_setting("after_hours_hold_threshold", "0.85")
@@ -69,6 +73,7 @@ async def _read_all_risk_settings() -> RiskSettingsResponse:
     return RiskSettingsResponse(
         max_position_size_pct=float(max_pos),
         stop_loss_pct=float(stop_loss),
+        take_profit_pct=float(take_profit),
         max_daily_loss_dollars=float(max_daily),
         signal_staleness_minutes=int(staleness),
         after_hours_hold_threshold=float(after_hours),

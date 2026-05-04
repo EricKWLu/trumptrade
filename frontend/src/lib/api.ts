@@ -90,6 +90,7 @@ export interface WatchlistItem {
 export interface RiskSettings {
   max_position_size_pct: number
   stop_loss_pct: number
+  take_profit_pct: number
   max_daily_loss_dollars: number
   signal_staleness_minutes: number
   after_hours_hold_threshold: number

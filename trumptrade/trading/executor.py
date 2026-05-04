@@ -35,6 +35,9 @@ class AlpacaExecutor:
         # STEP 2: Read runtime settings from DB (re-read per request per D-06 — no caching)
         trading_mode = await self._get_setting("trading_mode")   # "paper" | "live"
         stop_loss_pct = float(await self._get_setting("stop_loss_pct"))  # "5.0" → 5.0
+        take_profit_pct_raw = await self._get_setting("take_profit_pct")
+        # Default to 2x stop_loss_pct if not set (preserves prior 1:2 risk-reward behavior)
+        take_profit_pct = float(take_profit_pct_raw) if take_profit_pct_raw else stop_loss_pct * 2
         is_paper = (trading_mode == "paper")
 
         # STEP 3: Instantiate clients per-request (NOT cached — D-06 requires mode re-read)
@@ -69,8 +72,7 @@ class AlpacaExecutor:
 
         # STEP 5: Calculate stop and take-profit prices (D-02)
         # Alpaca bracket orders require BOTH stop_loss and take_profit.
-        # take_profit_pct defaults to 2x stop_loss_pct for a 1:2 risk-reward ratio.
-        take_profit_pct = stop_loss_pct * 2
+        # take_profit_pct read from app_settings in STEP 2 (defaults to 2x stop_loss).
         is_buy = side.lower() == "buy"
         if is_buy:
             stop_price = round(last_price * (1 - stop_loss_pct / 100), 2)
